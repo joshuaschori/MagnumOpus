@@ -1,0 +1,869 @@
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Dehaze
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.dp
+import com.russhwolf.settings.ExperimentalSettingsApi
+import com.russhwolf.settings.Settings
+import kotlinx.coroutines.launch
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
+import kotlin.math.floor
+
+/*
+    TODO make the drawer push content right
+    TODO decide whether gesture will open drawer? where on screen?
+    TODO try emulating on iphone?
+    TODO touch listener, touch event, modifier touch listener compose
+    TODO x's for each string?
+    TODO parity between x / y fret and string spacing
+    TODO GIT github
+    TODO mutablestatelistof? deal with recomposition and fret memory
+    TODO ViewModel
+    TODO room and shared preferences for android, sql delite for multiplatform, ORM, wrappers
+    TODO FretMemory can calculate x and y?
+*/
+
+const val insetHorizontal = 50f
+const val insetVertical = 50f
+val settings: Settings = Settings()
+
+//@Serializable
+class FretMemory(var fretSelected: MutableState<Int>, var x: MutableState<Float>, var y: MutableState<Float>) {
+    var visible = mutableStateOf(false)
+}
+
+//@Serializable
+class PitchLetter(val letter: String) {
+    val numberValue: Int = when (letter) {
+        "C" -> 0
+        "D" -> 1
+        "E" -> 2
+        "F" -> 3
+        "G" -> 4
+        "A" -> 5
+        "B" -> 6
+        else -> 0
+    }
+
+    //TODO use for making thirds? etc
+    fun letterIntervalFrom(letter: PitchLetter) {
+
+    }
+}
+
+//@Serializable
+class Accidental(val accidental: String)
+
+
+//@Serializable
+class Pitch(val midiValue: Int) {
+    // TODO logic in chord interpretation, if hasNatural, logic for sequential numbers, val letterName
+    val hasNatural: Boolean = when (midiValue % 12) {
+        0,2,4,5,7,9,11 -> true
+        1,3,6,8,10 -> false
+        else -> false
+    }
+    val neutralReading: String = when (midiValue % 12) {
+        0 -> "C"
+        1 -> "C#/Db"
+        2 -> "D"
+        3 -> "D#/Eb"
+        4 -> "E"
+        5 -> "F"
+        6 -> "F#/Gb"
+        7 -> "G"
+        8 -> "G#/Ab"
+        9 -> "A"
+        10 -> "A#/Bb"
+        11 -> "B"
+        else -> "Error"
+    }
+    val flatReading: String = when (midiValue % 12) {
+        0 -> "Dbb"
+        1 -> "Db"
+        2 -> "Ebb"
+        3 -> "Eb"
+        4 -> "Fb"
+        5 -> "Gbb"
+        6 -> "Gb"
+        7 -> "Abb"
+        8 -> "Ab"
+        9 -> "Bbb"
+        10 -> "Bb"
+        11 -> "Cb"
+        else -> "Error"
+    }
+    val flatLetter: String = when (midiValue % 12) {
+        0 -> "D"
+        1 -> "D"
+        2 -> "E"
+        3 -> "E"
+        4 -> "F"
+        5 -> "G"
+        6 -> "G"
+        7 -> "A"
+        8 -> "A"
+        9 -> "B"
+        10 -> "B"
+        11 -> "C"
+        else -> "Error"
+    }
+    val sharpReading: String = when (midiValue % 12) {
+        0 -> "B#"
+        1 -> "C#"
+        2 -> "C##"
+        3 -> "D#"
+        4 -> "D##"
+        5 -> "E#"
+        6 -> "F#"
+        7 -> "F##"
+        8 -> "G#"
+        9 -> "G##"
+        10 -> "A#"
+        11 -> "A##"
+        else -> "Error"
+    }
+    val sharpLetter: String = when (midiValue % 12) {
+        0 -> "B"
+        1 -> "C"
+        2 -> "C"
+        3 -> "D"
+        4 -> "D"
+        5 -> "E"
+        6 -> "F"
+        7 -> "F"
+        8 -> "G"
+        9 -> "G"
+        10 -> "A"
+        11 -> "A"
+        else -> "Error"
+    }
+}
+
+//@Serializable
+class GuitarString(val tuning: Pitch) {
+    val maxThickness: Float = 6.0f
+    val minThickness: Float = 1.0f
+    val thicknessIncrement: Float = (maxThickness - minThickness) / 40f
+    val thickness: Float = when (tuning.midiValue) {
+        in 0 .. 39 -> (maxThickness - (tuning.midiValue * thicknessIncrement))
+        else -> minThickness
+    }
+}
+
+//@Serializable
+class Guitar(val numberOfFrets: Int) {
+    val lineColor: Color = Color.Black
+    val lineThickness: Float = 1f
+    val fretThickness: Float = 1f
+    val fretboardLength: Float = 500f
+    val stringSpacing: Float = 30f
+    val fretSpacing: Float = fretboardLength / numberOfFrets
+    val fretMarkers: List<Int> = listOf(3,5,7,9,12,15,17,19,21,24)
+    val fretMarkerSize: Float = 6f
+    val frettedNoteSize: Float = stringSpacing / 2f * 0.9f
+    val unfrettedSize: Float = frettedNoteSize / 2f
+    val strings: MutableList<GuitarString> = mutableListOf(
+        GuitarString(Pitch(16)),
+        GuitarString(Pitch(21)),
+        GuitarString(Pitch(26)),
+        GuitarString(Pitch(31)),
+        GuitarString(Pitch(35)),
+        GuitarString(Pitch(40))
+    )
+    val numberOfStrings: Int = strings.size
+    val stringLocations: List<Float> = (1..numberOfStrings).map {
+        stringSpacing * (it - 1)
+    }
+    val fretLocations: List<Float> = (0..numberOfFrets).map {
+        (0f - fretSpacing * 0.5f) + (fretSpacing * it)
+    }
+    val fretSelectionRadius = 14f
+    var fretMemory: MutableList<FretMemory> = mutableStateListOf()
+
+    init {
+        // add default open string hidden values to fretMemory for each string
+        repeat(numberOfStrings) {stringIndex ->
+            fretMemory.add(
+                FretMemory(
+                    x = mutableStateOf(stringSpacing * stringIndex),
+                    y = mutableStateOf(0f - fretSpacing * 0.5f),
+                    fretSelected = mutableStateOf(0)
+                )
+            )
+        }
+    }
+}
+
+class Chord(val pitches: MutableList<Pitch>) {
+    val chordInterpretationsList: MutableList<ChordInterpretation> = mutableListOf()
+    var chosenInterpretationIndex: Int = 0
+
+    var chosenType: String = ""
+    var chosenRoot: String = ""
+    var chordName: String = ""
+
+    init {
+        // iterate through possible interpretations using each pitch as the root note
+        for (root in pitches) {
+
+            // add ChordInterpretation to chordInterpretationsList
+            chordInterpretationsList.add(ChordInterpretation(root = root, pitches = pitches))
+
+            // determine chord spelling, which is the chord interpretation with highest relevancy score
+            var tempScore: Float = 0f
+            var tempIndex: Int = 0
+            for ((index, chord) in chordInterpretationsList.withIndex()) {
+                if (chord.relevancyScore > tempScore) {
+                    tempScore = chord.relevancyScore
+                    tempIndex = index
+                }
+            }
+            chosenInterpretationIndex = tempIndex
+            chosenType = chordInterpretationsList[chosenInterpretationIndex].chordType
+
+            // determine the spelling for the root of the chord interpretation chosen in previous step
+            // TODO more context for naming of the root
+            // TODO determine scale to know whether chord will use sharps or flats
+            when (chordInterpretationsList[chosenInterpretationIndex].root.midiValue % 12) {
+                0,2,4,5,7,9,11 -> chosenRoot = chordInterpretationsList[chosenInterpretationIndex].root.neutralReading
+                1,6,8 -> chosenRoot = chordInterpretationsList[chosenInterpretationIndex].root.sharpReading
+                3,10 -> chosenRoot = chordInterpretationsList[chosenInterpretationIndex].root.flatReading
+            }
+
+            // combine the root of the chord with the chord type
+            chordName = chosenRoot + chosenType
+
+            // TODO
+            // TODO pitch interpretation
+        }
+    }
+}
+
+class ChordInterpretationHelper(
+    var inChord: Boolean = false, var inUpperOctave: Boolean = false
+)
+
+class ChordInterpretation(
+    val root: Pitch,
+    val pitches: List<Pitch>
+) {
+    var relevancyScore: Float = 0f
+    val octaveScoringFactor: Float = 3.0f
+    val duplicateNoteScoringFactor: Float = 0.5f
+    val rootOctave: Int = floor((root.midiValue / 12).toFloat()).toInt()
+    val intervalScores: List<Int> = listOf(20, 0, 0, 20, 20, 0, 20, 20, 0, 0, 0, 0)
+    val hasInterval: List<ChordInterpretationHelper> = (0..11).map {
+        ChordInterpretationHelper()
+    }
+    var chordType: String = ""
+
+    init {
+        for (pitch in pitches) {
+            val pitchOctave: Int = floor((pitch.midiValue / 12).toFloat()).toInt()
+            val interval: Int = ((pitch.midiValue - root.midiValue).mod(12))
+            var duplicate: Boolean = false
+
+            if (hasInterval[interval].inChord) {
+                duplicate = true
+            }
+            else {
+                hasInterval[interval].inChord = true
+            }
+
+            if (pitchOctave > rootOctave) {
+                hasInterval[interval].inUpperOctave = true
+            }
+
+            if (intervalScores[interval] > 0) {
+                if (duplicate) {
+                    relevancyScore += intervalScores[interval] * duplicateNoteScoringFactor -
+                            pitchOctave * octaveScoringFactor
+                }
+                else {
+                    relevancyScore += intervalScores[interval] -
+                            pitchOctave * octaveScoringFactor
+                }
+            }
+        }
+
+        // TODO create chord tests
+        // food for thought, when adding score based on intervals:
+        // when considering an extended chord with a missing 5th (C E X Bb D F A)
+        // vs the same pitch classes spelled without any missing 5th (Bb D F A C E),
+        // if the C and E are lower octaves, it should be C13
+        // if the Bb is lower than the C, it should be Bbmaj9(#11)
+
+        // (A D F) should be D chord first inversion
+        // (G D F) should be G7(no3) not Gm7(no3)
+        // (G F A) should be G7sus2
+        // (G F A C) should be Gsus9 or G9sus4? (abbreviation for G7sus4(9), a sus4 chord with 7 and 9)
+
+        // TODO 11 chords? 13 chords?
+        // TODO two note chords / intervals? three notes with less than three pitch classes?
+        // TODO chord's conceptual structure vs intervallic structure
+        // TODO advanced settings to hide things for first time user
+        // TODO polychords
+        // TODO val additions, val quality
+        // TODO bass notes, slash chords, inversions
+        // TODO if has three or more unique pitch classes otherwise interval or pitch
+        // TODO bonus score for designated chord structures?
+
+        //TODO split 3rd
+        // decide between chord quality: major, minor, suspended, augmented, split 3rd
+
+        // TODO split up into chord quality and chord additions, chord quality enum?
+        // TODO reverse pitch interpretation, scales
+        // TODO superscripts
+        // TODO double sharp and double flat symbols, fancier sharp and flat symbols, natural symbol
+
+        val unison: Int = 0
+        val minorSecond: Int = 1
+        val majorSecond: Int = 2
+        val minorThird: Int = 3
+        val majorThird: Int = 4
+        val fourth: Int = 5
+        val tritone: Int = 6
+        val fifth: Int = 7
+        val augmentedFifth: Int = 8
+        val minorSixth: Int = 8
+        val majorSixth: Int = 9
+        val minorSeventh: Int = 10
+        val majorSeventh: Int = 11
+
+        if (hasInterval[majorThird].inChord) {
+            if (hasInterval[fifth].inChord) {
+                chordType = ""
+            }
+            else if (hasInterval[augmentedFifth].inChord) {
+                chordType = "+"
+            }
+            else {
+                chordType = ""
+            }
+        }
+        else if (hasInterval[minorThird].inChord) {
+            if (hasInterval[fifth].inChord) {
+                chordType = "m"
+            }
+            else if (hasInterval[tritone].inChord) {
+                if (!hasInterval[minorSeventh].inChord) {
+                    chordType = "o"
+                }
+                else {
+                    chordType = "ø"
+                }
+            }
+            else {
+                chordType = "m"
+            }
+        }
+        else if (hasInterval[fourth].inChord) {
+            chordType = "sus4"
+        }
+        else if (hasInterval[majorSecond].inChord) {
+            chordType ="sus2"
+        }
+
+
+
+
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
+        var chordQuality: String = ""
+        var chordAdditions: String = ""
+        var flatInterpretationNumber: Int = 0
+        val sharpInterpretationNumber: Int = 0
+
+        val listOfUsedLetters: MutableList<String> = mutableListOf()
+        val listOfNonNaturalPitches: MutableList<Pitch> = mutableListOf()
+        var chordAccidentals: String = ""
+        val pitchReadings: MutableList<String> = mutableListOf()
+
+        // this won't work either??? because of E augmented
+        /*
+        for (pitch in pitches) {
+            if (pitch.hasNatural) {
+                listOfUsedLetters.add(pitch.neutralReading)
+            }
+            else {
+                listOfNonNaturalPitches.add(pitch)
+            }
+        }
+         */
+
+        // TODO create note spelling tests
+        // E augmented should be (E G# B#) not (E G# C) or (E Ab C), root is whichever is the lowest
+
+        if (listOfNonNaturalPitches.isNotEmpty()) {
+            // TODO if a possible letter for the nonNaturalPitch is already used and the other letter is free, use the free
+            /* this probably won't work?
+            while (chordAccidentals == "") {
+                for (pitch in listOfNonNaturalPitches) {
+                    if (pitch.flatLetter in listOfUsedLetters && pitch.sharpLetter !in listOfUsedLetters) {
+                        chordAccidentals = "sharp"
+                    }
+                    else if (pitch.flatLetter !in listOfUsedLetters && pitch.sharpLetter in listOfUsedLetters) {
+                        chordAccidentals = "flat"
+                    }
+                }
+            }
+             */
+
+            // TODO if more than one nonNaturalPitch shares a possible letter unused letter
+
+            // TODO scale based
+            // TODO if unison third and fifth in major / minor scale
+        }
+
+        for (pitch in pitches) {
+            if (pitch.hasNatural) {
+                pitchReadings.add(pitch.neutralReading)
+            }
+            else {
+
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSerializationApi::class,
+    ExperimentalSettingsApi::class
+)
+@Composable
+fun App() {
+
+
+    // TODO play around with multiplatform settings library
+    val settingExample = "guitar 1"
+    settings.putString("guitar selected", "9")
+    val guitarFromPreferences = settings.getString("guitar selected", "default")
+    println(guitarFromPreferences)
+
+    val guitarExample: Guitar = Guitar(12)
+    // TODO can't encode mutable state
+    //settings.encodeValue(Guitar.serializer(), "Current Guitar", guitarExample)
+
+
+
+
+    MaterialTheme() {
+        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+        val coroutineScope = rememberCoroutineScope()
+
+        // TODO finish navigation drawer
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet {
+                    Text("Drawer title", modifier = Modifier.padding(16.dp))
+                    Divider()
+                    NavigationDrawerItem(
+                        label = { Text(text = "Drawer Item") },
+                        selected = false,
+                        onClick = { }
+                    )
+                    // ...other drawer items
+                }
+            },
+            gesturesEnabled = false
+        ) {
+            Scaffold(
+                topBar = {
+                    // TODO finish top app bar
+                    TopAppBar(
+                        actions = {
+                            IconButton(onClick = { /* do something */ }) {
+                                Icon(Icons.Filled.MoreVert, contentDescription = "Localized description")
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            titleContentColor = MaterialTheme.colorScheme.primary,
+                        ),
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        drawerState.apply {
+                                            if (isClosed) open() else close()
+                                        }
+                                    }
+                                }
+                            ) {
+                                Icon(Icons.Filled.Dehaze, contentDescription = "Localized description")
+                            }
+                        },
+                        title = {
+                            Text("Magnum Opus")
+                        }
+                    )
+                },
+                // TODO finish bottom bar
+                bottomBar = {
+                    BottomAppBar(
+                        actions = {
+                            IconButton(onClick = { /* do something */ }) {
+                                Icon(Icons.Filled.Check, contentDescription = "Localized description")
+                            }
+                            IconButton(onClick = { /* do something */ }) {
+                                Icon(
+                                    Icons.Filled.Edit,
+                                    contentDescription = "Localized description",
+                                )
+                            }
+                            IconButton(onClick = { /* do something */ }) {
+                                Icon(
+                                    Icons.Filled.Home,
+                                    contentDescription = "Localized description",
+                                )
+                            }
+                            IconButton(onClick = { /* do something */ }) {
+                                Icon(
+                                    Icons.Filled.Star,
+                                    contentDescription = "Localized description",
+                                )
+                            }
+                        },
+                        floatingActionButton = {
+                            FloatingActionButton(
+                                onClick = { /* do something */ },
+                                containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+                            ) {
+                                Icon(Icons.Filled.Add, "Localized description")
+                            }
+                        }
+                    )
+                }
+            ) { innerPadding ->
+                // content on screen
+                val navigationState: String = "Home"
+                if (navigationState == "Home") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(paddingValues = innerPadding)
+                    ) {
+
+                        // TODO multiple guitars / guitar options in settings
+                        val currentGuitar: Guitar by remember { mutableStateOf(Guitar(12)) }
+
+                        GuitarCanvas(
+                            innerPadding = innerPadding,
+                            currentGuitar = currentGuitar
+                        )
+
+                        Column() {
+                            val currentPitches: MutableList<Pitch> = mutableStateListOf()
+
+                            repeat(currentGuitar.numberOfStrings) {stringIndex ->
+                                if (currentGuitar.fretMemory[stringIndex].visible.value) {
+                                    currentPitches.add(
+                                        Pitch(currentGuitar.strings[stringIndex].tuning.midiValue + currentGuitar.fretMemory[stringIndex].fretSelected.value)
+                                    )
+                                }
+                            }
+
+                            val currentMidiValues: MutableList<Int> = mutableStateListOf()
+
+                            for (pitch in currentPitches) {
+                                currentMidiValues.add(pitch.midiValue)
+                            }
+
+                            Text(
+                                "Pitches: ${currentMidiValues.joinToString(" ")}",
+                                modifier = Modifier
+                                    .padding(top = insetVertical.dp)
+                            )
+
+                            Text(
+                                "Notes: ",
+                                modifier = Modifier
+                                    .padding(top = insetVertical.dp)
+                            )
+
+                            Text(
+                                "Intervals: ",
+                                modifier = Modifier
+                                    .padding(top = insetVertical.dp)
+                            )
+
+                            Text(
+                                "Chord Structure: ",
+                                modifier = Modifier
+                                    .padding(top = insetVertical.dp)
+                            )
+
+                            if (currentPitches.size > 1) {
+                                val currentChord = Chord(currentPitches)
+
+                                Text(
+                                    "Chord Name: ${currentChord.chordName}",
+                                    modifier = Modifier
+                                        .padding(top = insetVertical.dp)
+                                )
+
+                                println(currentChord.chordName)
+                                println(currentChord.chordInterpretationsList[currentChord.chosenInterpretationIndex].chordType)
+                                println(currentChord.chordInterpretationsList[currentChord.chosenInterpretationIndex].relevancyScore)
+                                println()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun GuitarCanvas(
+    innerPadding: PaddingValues,
+    currentGuitar: Guitar
+) {
+    Canvas(modifier = Modifier
+        .fillMaxHeight()
+        .width((insetHorizontal * 2 + currentGuitar.stringSpacing * 5).dp)
+        .padding(bottom = innerPadding.calculateBottomPadding())
+        .pointerInput(Unit) {
+            detectTapGestures(
+                // update fretMemory if the coordinates of a fret are clicked
+                onPress = {
+                    val pointerX = it.x
+                    val pointerY = it.y
+
+                    // determine if you have clicked within range of a string
+                    for ((stringIndex, string) in currentGuitar.stringLocations.withIndex()) {
+                        if (string.dp.toPx() in pointerX - insetHorizontal.dp.toPx() - currentGuitar.fretSelectionRadius.dp.toPx()
+                            ..pointerX - insetHorizontal.dp.toPx() + currentGuitar.fretSelectionRadius.dp.toPx()) {
+                            // determine if you have clicked within range of a fret
+                            for ((fretIndex, fret) in currentGuitar.fretLocations.withIndex()) {
+                                if (fret.dp.toPx() in pointerY - insetVertical.dp.toPx() - currentGuitar.fretSelectionRadius.dp.toPx()
+                                    ..pointerY - insetVertical.dp.toPx() + currentGuitar.fretSelectionRadius.dp.toPx()) {
+                                    // if you have clicked on a fret that is already selected, then deselect it
+                                    if (
+                                        currentGuitar.fretMemory[stringIndex].y.value == fret && currentGuitar.fretMemory[stringIndex].visible.value
+                                    ) {
+                                        currentGuitar.fretMemory[stringIndex].x.value = currentGuitar.stringSpacing * stringIndex
+                                        currentGuitar.fretMemory[stringIndex].y.value = 0f - currentGuitar.fretSpacing * 0.5f
+                                        currentGuitar.fretMemory[stringIndex].fretSelected.value = 0
+                                        currentGuitar.fretMemory[stringIndex].visible.value = false
+                                    }
+                                    // else store the coordinates of the newly selected fret in fret memory
+                                    else {
+                                        currentGuitar.fretMemory[stringIndex].x.value = currentGuitar.stringSpacing * stringIndex
+                                        currentGuitar.fretMemory[stringIndex].y.value = fret
+                                        currentGuitar.fretMemory[stringIndex].fretSelected.value = fretIndex
+                                        currentGuitar.fretMemory[stringIndex].visible.value = true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+            )
+        }
+    ) {
+
+        inset(horizontal = insetHorizontal.dp.toPx(), vertical = insetVertical.dp.toPx()) {
+            // draw the guitar strings
+            repeat(currentGuitar.numberOfStrings) { stringIndex ->
+                drawLine(
+                    color = currentGuitar.lineColor,
+                    start = Offset(
+                        x = 0f + currentGuitar.stringSpacing.dp.toPx() * stringIndex,
+                        y = 0f
+                    ),
+                    end = Offset(
+                        x = 0f + currentGuitar.stringSpacing.dp.toPx() * stringIndex,
+                        // y starts at 2f because otherwise it doesn't quite intersect with frets
+                        y = 2f + currentGuitar.fretboardLength.dp.toPx()
+                    ),
+                    strokeWidth = currentGuitar.strings[stringIndex].thickness.dp.toPx()
+                )
+            }
+            // draw the guitar frets (and guitar nut at the top of the guitar)
+            repeat(currentGuitar.numberOfFrets + 1) { fretIndex ->
+                drawLine(
+                    color = currentGuitar.lineColor,
+                    start = Offset(
+                        x = 0f,
+                        // y starts at 1f because otherwise it doesn't quite intersect with strings
+                        y = 1f + currentGuitar.fretSpacing.dp.toPx() * fretIndex
+                    ),
+                    end = Offset(
+                        x = currentGuitar.stringSpacing.dp.toPx() * (currentGuitar.numberOfStrings - 1),
+                        // y starts at 1f because otherwise it doesn't quite intersect with strings
+                        y = 1f + currentGuitar.fretSpacing.dp.toPx() * fretIndex
+                    ),
+                    strokeWidth = currentGuitar.fretThickness.dp.toPx()
+                )
+            }
+
+            // create fret markers
+            repeat(currentGuitar.numberOfFrets + 1) { fretIndex ->
+                // make fret markers centered if the number of strings is even
+                if (currentGuitar.numberOfStrings % 2 == 0) {
+                    // draw the fret markers that have a single circle
+                    if (
+                        fretIndex + 1 in currentGuitar.fretMarkers &&
+                        (fretIndex + 1) % 12 != 0
+                    ) {
+                        drawCircle(
+                            currentGuitar.lineColor,
+                            radius = currentGuitar.fretMarkerSize.dp.toPx(),
+                            center = Offset(
+                                x = (currentGuitar.stringSpacing.dp.toPx() * (currentGuitar.numberOfStrings - 1)) / 2,
+                                y = currentGuitar.fretSpacing.dp.toPx() * (fretIndex + 0.5).toFloat()
+                            )
+                        )
+                    }
+                    // draw the fret markers that have two circles
+                    else if (fretIndex + 1 in currentGuitar.fretMarkers && (fretIndex + 1) % 12 == 0) {
+                        drawCircle(
+                            currentGuitar.lineColor,
+                            radius = currentGuitar.fretMarkerSize.dp.toPx(),
+                            center = Offset(
+                                x = currentGuitar.stringSpacing.dp.toPx() * 1.5.toFloat(),
+                                y = currentGuitar.fretSpacing.dp.toPx() * (fretIndex + 0.5).toFloat()
+                            )
+                        )
+                        drawCircle(
+                            currentGuitar.lineColor,
+                            radius = currentGuitar.fretMarkerSize.dp.toPx(),
+                            center = Offset(
+                                x = (currentGuitar.stringSpacing.dp.toPx() * (currentGuitar.numberOfStrings - 2))
+                                        - 0.5.toFloat() * currentGuitar.stringSpacing.dp.toPx(),
+                                y = currentGuitar.fretSpacing.dp.toPx() * (fretIndex + 0.5).toFloat()
+                            )
+                        )
+                    }
+                }
+                // make markers offset if the number of strings is odd, so that it doesn't overlap a string
+                else if (currentGuitar.numberOfStrings % 2 != 0) {
+                    // draw the fret markers that have a single circle
+                    if (
+                        fretIndex + 1 in currentGuitar.fretMarkers &&
+                        (fretIndex + 1) % 12 != 0
+                    ) {
+                        drawCircle(
+                            currentGuitar.lineColor,
+                            radius = currentGuitar.fretMarkerSize.dp.toPx(),
+                            center = Offset(
+                                x = currentGuitar.stringSpacing.dp.toPx() / 2,
+                                y = currentGuitar.fretSpacing.dp.toPx() * (fretIndex + 0.5).toFloat()
+                            )
+                        )
+                    }
+                    // draw the fret markers that have two circles
+                    else if (fretIndex + 1 in currentGuitar.fretMarkers && (fretIndex + 1) % 12 == 0) {
+                        drawCircle(
+                            currentGuitar.lineColor,
+                            radius = currentGuitar.fretMarkerSize.dp.toPx(),
+                            center = Offset(
+                                x = currentGuitar.stringSpacing.dp.toPx() / 2,
+                                y = currentGuitar.fretSpacing.dp.toPx() * (fretIndex + 0.5).toFloat()
+                            )
+                        )
+                        drawCircle(
+                            currentGuitar.lineColor,
+                            radius = currentGuitar.fretMarkerSize.dp.toPx(),
+                            center = Offset(
+                                x = currentGuitar.stringSpacing.dp.toPx() * 1.5.toFloat(),
+                                y = currentGuitar.fretSpacing.dp.toPx() * (fretIndex + 0.5).toFloat()
+                            )
+                        )
+                    }
+                }
+            }
+
+            repeat(currentGuitar.numberOfStrings) { stringIndex ->
+                // create indications of fretted notes
+                if (currentGuitar.fretMemory[stringIndex].visible.value) {
+                    drawCircle(
+                        currentGuitar.lineColor,
+                        radius = currentGuitar.frettedNoteSize.dp.toPx(),
+                        style = Stroke(width = currentGuitar.lineThickness.dp.toPx()),
+                        center = Offset(
+                            x = currentGuitar.fretMemory[stringIndex].x.value.dp.toPx(),
+                            y = currentGuitar.fretMemory[stringIndex].y.value.dp.toPx()
+                        )
+                    )
+                }
+                // create X shapes for strings that aren't being played
+                else {
+                    val path = Path()
+                    path.moveTo(
+                        currentGuitar.fretMemory[stringIndex].x.value.dp.toPx() - currentGuitar.unfrettedSize.dp.toPx(),
+                        currentGuitar.fretMemory[stringIndex].y.value.dp.toPx() - currentGuitar.unfrettedSize.dp.toPx()
+                    )
+                    path.lineTo(
+                        currentGuitar.fretMemory[stringIndex].x.value.dp.toPx() + currentGuitar.unfrettedSize.dp.toPx(),
+                        currentGuitar.fretMemory[stringIndex].y.value.dp.toPx() + currentGuitar.unfrettedSize.dp.toPx()
+                    )
+                    path.moveTo(
+                        currentGuitar.fretMemory[stringIndex].x.value.dp.toPx() + currentGuitar.unfrettedSize.dp.toPx(),
+                        currentGuitar.fretMemory[stringIndex].y.value.dp.toPx() - currentGuitar.unfrettedSize.dp.toPx()
+                    )
+                    path.lineTo(
+                        currentGuitar.fretMemory[stringIndex].x.value.dp.toPx() - currentGuitar.unfrettedSize.dp.toPx(),
+                        currentGuitar.fretMemory[stringIndex].y.value.dp.toPx() + currentGuitar.unfrettedSize.dp.toPx()
+                    )
+                    path.close()
+                    drawPath(path, currentGuitar.lineColor, style = Stroke(width = currentGuitar.lineThickness.dp.toPx()))
+                }
+            }
+        }
+    }
+}
