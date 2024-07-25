@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -41,6 +42,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.launch
@@ -207,41 +209,49 @@ fun App() {
                                 }
                             }
 
-                            val currentMidiValues: MutableList<Int> = mutableStateListOf()
+                            val currentNoteNames: MutableList<String> = mutableStateListOf()
+                            var currentChordName: String = ""
 
-                            for (pitch in currentPitches) {
-                                currentMidiValues.add(pitch.midiValue)
-                            }
-
-                            Text(
-                                "Pitches: ${currentMidiValues.joinToString(" ")}",
-                                modifier = Modifier
-                                    .padding(top = insetVertical.dp)
-                            )
-
-                            if (currentPitches.size > 1) {
+                            if (currentPitches.size > 0) {
                                 val currentChord = Chord(currentPitches)
-
-                                Text(
-                                    "Chord Name: ${currentChord.chosenChordName}",
-                                    modifier = Modifier
-                                        .padding(top = insetVertical.dp)
-                                )
-
-                                val currentNoteNames: MutableList<String> = mutableStateListOf()
+                                currentChordName = currentChord.chosenChordName
 
                                 for (pitch in currentChord.chordInterpretationsList[currentChord.chosenInterpretationIndex].chosenPitches) {
                                     currentNoteNames.add(
                                         pitch.chosenReading.name
                                     )
                                 }
-
-                                Text(
-                                    "Notes: ${currentNoteNames.joinToString(" ")}",
-                                    modifier = Modifier
-                                        .padding(top = insetVertical.dp)
-                                )
                             }
+
+                            if (currentPitches.size < 2) {
+                                currentChordName = ""
+                            }
+
+                            Text(
+                                "Notes:",
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .padding(top = insetVertical.dp)
+                            )
+
+                            Text(
+                                currentNoteNames.joinToString(" "),
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                            )
+
+                            Text(
+                                "Chord:",
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .padding(top = insetVertical.dp)
+                            )
+
+                            Text(
+                                currentChordName,
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                            )
                         }
                     }
                 }

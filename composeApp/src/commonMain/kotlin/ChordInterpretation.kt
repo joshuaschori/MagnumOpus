@@ -15,6 +15,7 @@
 // test with two unison notes, one note going chromatically up to octave
 // chords without 5 but with 3rd and 7th should still be pretty relevant
 // should C G B D F A be C13(no 3) or G13 ??? suspended ??? if second / fourth is below fifth / seventh? prob C sus
+// should be Eb minor and not D# minor, because D# minor is the relative minor of B#
 // TODO bass bonus relevancy?
 // TODO chord's conceptual structure vs intervallic structure
 // TODO advanced settings to hide things for first time user
@@ -26,49 +27,7 @@
 // TODO superscripts
 // TODO double sharp and double flat symbols, fancier sharp and flat symbols, natural symbol
 // TODO "sets" ( 0 1 7 ) ( 0 6 7 ) etc
-
-// constants for relevancy score
-const val octaveScoringFactor: Float = 1.0f
-const val duplicateNoteScoringFactor: Float = 0.5f
-const val fullScore = 30.0f
-const val halfScore = 15.0f
-const val bassNoteBonus = 15.0f
-
-// chromatic interval values
-const val perfectUnison: Int = 0
-const val minorSecond: Int = 1
-const val majorSecond: Int = 2
-const val minorThird: Int = 3
-const val majorThird: Int = 4
-const val perfectFourth: Int = 5
-const val augmentedFourth: Int = 6
-const val diminishedFifth: Int = 6
-const val perfectFifth: Int = 7
-const val augmentedFifth: Int = 8
-const val minorSixth: Int = 8
-const val majorSixth: Int = 9
-const val diminishedSeventh: Int = 9
-const val minorSeventh: Int = 10
-const val majorSeventh: Int = 11
-
-// letter interval values
-const val unison: Int = 0
-const val second: Int = 1
-const val third: Int = 2
-const val fourth: Int = 3
-const val fifth: Int = 4
-const val sixth: Int = 5
-const val seventh: Int = 6
-
-// TODO @Serializable
-// TODO contain pitches in chord interpretation helper??? get rid of inUpperOctave? or not?
-class ChordInterpretationHelper() {
-    var inChord: Boolean = false
-    var inUpperOctave: Boolean = false
-    var lowestPitchIndex: Int = 0
-    var duplicatePitchIndexes: MutableList<Int> = mutableListOf()
-    var letterInterval: Int = 0
-}
+// TODO "chord" shows up when there's just an octave or unison?
 
 // TODO @Serializable
 // TODO order pitches by midiValue, in the case that a higher string is a lower pitch???
@@ -77,6 +36,41 @@ class ChordInterpretation(
     val bassNote: Pitch,
     val pitches: List<Pitch>
 ) {
+    companion object {
+        // constants for relevancy score
+        const val octaveScoringFactor: Float = 1.0f
+        const val duplicateNoteScoringFactor: Float = 0.5f
+        const val fullScore = 30.0f
+        const val halfScore = 15.0f
+        const val bassNoteBonus = 15.0f
+
+        // chromatic interval values
+        const val perfectUnison: Int = 0
+        const val minorSecond: Int = 1
+        const val majorSecond: Int = 2
+        const val minorThird: Int = 3
+        const val majorThird: Int = 4
+        const val perfectFourth: Int = 5
+        const val augmentedFourth: Int = 6
+        const val diminishedFifth: Int = 6
+        const val perfectFifth: Int = 7
+        const val augmentedFifth: Int = 8
+        const val minorSixth: Int = 8
+        const val majorSixth: Int = 9
+        const val diminishedSeventh: Int = 9
+        const val minorSeventh: Int = 10
+        const val majorSeventh: Int = 11
+
+        // letter interval values
+        const val unison: Int = 0
+        const val second: Int = 1
+        const val third: Int = 2
+        const val fourth: Int = 3
+        const val fifth: Int = 4
+        const val sixth: Int = 5
+        const val seventh: Int = 6
+    }
+
     var chosenRoot: Pitch = root.copy()
     val chosenPitches: List<Pitch> = pitches.map { it.copy() }
     val intervals: List<ChordInterpretationHelper> = (0..11).map {
@@ -182,7 +176,7 @@ class ChordInterpretation(
         // determine identity of chord while applying relevancy for appropriate intervals
         // TODO addb13 for 6 chord without seventh and with both major and minor sixth?
         // TODO add b6 or just b6? I think add♭6
-        // TODO ♯ b °
+        // TODO ♯ b ° ᵐᵃʲ⁷ ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻ ⁼ ⁽ ⁾ ᵃ ᵇ ᶜ ᵈ ᵉ ᶠ ᵍ ʰ ⁱ ʲ ᵏ ˡ ᵐ ⁿ ᵒ ᵖ ʳ ˢ ᵗ ᵘ ᵛ ʷ ˣ ʸ ᶻ
         if (intervals[majorThird].inChord) { chordType = ""; applyRelevancy(majorThird, fullScore)
             if (intervals[majorSeventh].inChord) { chordType = "maj7"
                 if (intervals[majorSixth].inChord) { chordType = "maj13" }
@@ -235,9 +229,9 @@ class ChordInterpretation(
             if (intervals[perfectFifth].inChord) { applyRelevancy(perfectFifth, fullScore) }
             else if (intervals[diminishedFifth].inChord) { chordType = "°"; applyRelevancy(diminishedFifth, fullScore); intervals[diminishedFifth].letterInterval = fifth
                 if (intervals[majorSeventh].inChord) { chordType = "°(maj7)"
-                    if (intervals[majorSixth].inChord) { chordType = "m(maj13)b5" }
-                    else if (intervals[perfectFourth].inChord) { chordType = "m(maj11)b5" }
-                    else if (intervals[majorSecond].inChord) { chordType = "m(maj9)b5" }
+                    if (intervals[majorSixth].inChord) { chordType = "m(maj13)♭5" }
+                    else if (intervals[perfectFourth].inChord) { chordType = "m(maj11)♭5" }
+                    else if (intervals[majorSecond].inChord) { chordType = "m(maj9)♭5" }
                 }
                 else if (intervals[minorSeventh].inChord) { chordType = "ø7"
                     if (intervals[majorSixth].inChord) { chordType = "m13♭5" }
@@ -289,7 +283,7 @@ class ChordInterpretation(
                 }
                 else if (intervals[majorSixth].inChord) { chordType = "6(no3)" }
             }
-            else if (intervals[diminishedFifth].inChord) { chordType = "o(no3)"; applyRelevancy(diminishedFifth, fullScore); intervals[diminishedFifth].letterInterval = fifth }
+            else if (intervals[diminishedFifth].inChord) { chordType = "°(no3)"; applyRelevancy(diminishedFifth, fullScore); intervals[diminishedFifth].letterInterval = fifth }
             else if (intervals[majorSeventh].inChord) { chordType = "maj7(no3)"; applyRelevancy(majorSeventh, halfScore) }
             else if (intervals[minorSeventh].inChord) { chordType = "7(no3)"; applyRelevancy(minorSeventh, halfScore) }
             else { chordType = "(no3)"}
@@ -355,6 +349,24 @@ class ChordInterpretation(
                 }
             }
 
+            if (!intervals[perfectFifth].inChord && !intervals[diminishedFifth].inChord && !intervals[augmentedFifth].inChord) {
+                val impliedFifth: Pitch = Pitch(root.midiValue + 7)
+
+                impliedFifth.chosenReading = PitchSpelling(
+                    impliedFifth.midiValue % 12,
+                    flatRoot.chosenReading.pitchLetter.letterAtInterval(4),
+                    Accidental("unknown")
+                )
+                when (impliedFifth.chosenReading.accidental.type) {
+                    "flat" -> {
+                        numberOfFlats++
+                    }
+                    "doubleflat" -> {
+                        numberOfFlats += 2
+                    }
+                }
+            }
+
             for (pitch in sharpPitches) {
                 if (pitch.midiValue == sharpRoot.midiValue) {
                     pitch.chosenReading = sharpRoot.chosenReading
@@ -381,6 +393,38 @@ class ChordInterpretation(
                     }
                 }
             }
+
+            if (!intervals[perfectFifth].inChord && !intervals[diminishedFifth].inChord && !intervals[augmentedFifth].inChord) {
+                val impliedFifth: Pitch = Pitch(root.midiValue + 7)
+
+                impliedFifth.chosenReading = PitchSpelling(
+                    impliedFifth.midiValue % 12,
+                    sharpRoot.chosenReading.pitchLetter.letterAtInterval(4),
+                    Accidental("unknown")
+                )
+                when (impliedFifth.chosenReading.accidental.type) {
+                    "sharp" -> {
+                        numberOfSharps++
+                    }
+                    "doublesharp" -> {
+                        numberOfSharps += 2
+                    }
+                }
+            }
+
+            /*
+
+            TODO
+                if (numberOfFlats == numberOfSharps) {
+                    check if major or minor chord, and if the corresponding scales have more flats or sharps
+                }
+
+            TODO
+                will have to make scale class, that knows number of flats and sharps
+                also have to make chord interpretation tree update a chord quality variable somewhere
+                should make Eb minor instead of D# minor
+
+             */
 
             if (numberOfFlats < numberOfSharps) {
                 chosenRoot = flatRoot
