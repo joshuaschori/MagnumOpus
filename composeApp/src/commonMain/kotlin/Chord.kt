@@ -3,6 +3,8 @@ class Chord(val pitches: MutableList<Pitch>) {
     val chordInterpretationsList: MutableList<ChordInterpretation> = mutableListOf()
     var chosenInterpretationIndex: Int = 0
     var chosenChordName: String = ""
+    var chosenChordExtensionsPrefix: String = ""
+    var chosenChordExtensions: String = ""
 
     init {
 
@@ -35,6 +37,8 @@ class Chord(val pitches: MutableList<Pitch>) {
         }
         chosenInterpretationIndex = tempIndex
         chosenChordName = chordInterpretationsList[chosenInterpretationIndex].chordName
+        chosenChordExtensionsPrefix = chordInterpretationsList[chosenInterpretationIndex].extensionsPrefix
+        chosenChordExtensions = chordInterpretationsList[chosenInterpretationIndex].extensions.joinToString(",")
 
     }
 }

@@ -41,6 +41,10 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.russhwolf.settings.ExperimentalSettingsApi
@@ -211,10 +215,14 @@ fun App() {
 
                             val currentNoteNames: MutableList<String> = mutableStateListOf()
                             var currentChordName: String = ""
+                            var currendChordExtensionsPrefix: String = ""
+                            var currentChordExtensions: String = ""
 
                             if (currentPitches.size > 0) {
                                 val currentChord = Chord(currentPitches)
                                 currentChordName = currentChord.chosenChordName
+                                currendChordExtensionsPrefix = currentChord.chosenChordExtensionsPrefix
+                                currentChordExtensions = currentChord.chosenChordExtensions
 
                                 for (pitch in currentChord.chordInterpretationsList[currentChord.chosenInterpretationIndex].chosenPitches) {
                                     currentNoteNames.add(
@@ -227,6 +235,12 @@ fun App() {
                                 currentChordName = ""
                             }
 
+                            val superscript = SpanStyle(
+                                baselineShift = BaselineShift.Superscript,
+                                fontSize = 12.sp,
+                                color = Color.Black
+                            )
+
                             Text(
                                 "Notes:",
                                 fontSize = 20.sp,
@@ -235,7 +249,7 @@ fun App() {
                             )
 
                             Text(
-                                currentNoteNames.joinToString(" "),
+                                currentNoteNames.joinToString("  "),
                                 fontSize = 20.sp,
                                 modifier = Modifier
                             )
@@ -248,7 +262,13 @@ fun App() {
                             )
 
                             Text(
-                                currentChordName,
+                                buildAnnotatedString {
+                                    append(currentChordName)
+                                    withStyle(superscript) {
+                                        append(currendChordExtensionsPrefix)
+                                        append(currentChordExtensions)
+                                    }
+                                },
                                 fontSize = 20.sp,
                                 modifier = Modifier
                             )
