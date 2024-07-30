@@ -162,32 +162,45 @@ class ChordInterpretation(
                 }
                 if (majorSecond in listOfExtensions && chordQuality != "suspended2") {
                     if (addOrMod == "mod" &&
-                        (intervals[minorSecond].inChord || intervals[augmentedSecond].inChord) &&
-                        (intervals[perfectFourth].inChord || intervals[majorSixth].inChord)
+                        // unused possibility to leave out of 9 chords:
+                        // (intervals[perfectFourth].inChord || intervals[majorSixth].inChord) &&
+                        (intervals[minorSecond].inChord || intervals[augmentedSecond].inChord)
                         ) {
                         extensions = extensions + "♮9"
                     }
                     else if (addOrMod == "add" && !intervals[majorSixth].inChord) {
-                        extensions = extensions + "9"
+                        if (intervals[minorSecond].inChord || intervals[augmentedSecond].inChord) {
+                            extensions = extensions + "♮9"
+                        }
+                        else {
+                            extensions = extensions + "9"
+                        }
                     }
                 }
                 if (augmentedSecond in listOfExtensions) {
                     if (intervals[majorThird].inChord) {
                         extensions = extensions + "♯9"
-                        // possible subjective reading: intervals[augmentedSecond].letterInterval = second
+                        // unused possible subjective reading:
+                        // intervals[augmentedSecond].letterInterval = second
                     }
                 }
                 if (perfectFourth in listOfExtensions && chordQuality != "suspended4") {
-                    // TODO account for diminished chord with major Sixth
                     if (addOrMod == "mod" &&
                         intervals[augmentedFourth].inChord &&
-                        intervals[majorSixth].inChord &&
+                        intervals[augmentedFourth].letterInterval == fourth &&
+                        // unused possibility to leave out of 11 chords:
+                        // intervals[majorSixth].inChord &&
                         chordQuality != "diminished"
                     ) {
                         extensions = extensions + "♮11"
                     }
                     else if (addOrMod == "add") {
-                        extensions = extensions + "11"
+                        if (intervals[augmentedFourth].inChord && intervals[augmentedFourth].letterInterval == fourth) {
+                            extensions = extensions + "♮11"
+                        }
+                        else {
+                            extensions = extensions + "11"
+                        }
                     }
                 }
                 if (augmentedFourth in listOfExtensions &&
@@ -218,35 +231,14 @@ class ChordInterpretation(
         }
 
         // apply relevancy for root note(s)
-        applyRelevancy(perfectUnison, 20f)
+        applyRelevancy(perfectUnison, fullScore)
 
         // apply relevancy bonus for bass note being the root note
         if (root.midiValue == bassNote.midiValue) {
             relevancyScore += bassNoteBonus
         }
 
-        // TODO extensions function that also changes chordType
-        // TODO take care of all these intervals here: majorSecond, minorThird, majorThird,
-        // TODO split third, 7#9 chord
-        // TODO take care of add chords here
-        // TODO b6
-        //TODO finish add chords b9, 9, #9, 11, #11 (b13?) ♭
         // determine identity of chord while applying relevancy for appropriate intervals
-        // TODO addb13 for 6 chord without seventh and with both major and minor sixth?
-        // TODO add b6 or just b6? I think add♭6
-        // TODO ♭ ♮ ♯ °
-        // TODO
-        //              applyExtensions("add", listOf(1,2,3, 5,6, 8,9,10))
-
-
-
-
-
-
-        // TODO intervals omitted instead of the intervals to check?
-
-        // TODO not every chordQuality used functionally so far
-
         if (intervals[majorThird].inChord) { chordQuality = "major"; chordType = "";
             applyRelevancy(majorThird, fullScore)
 

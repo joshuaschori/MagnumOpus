@@ -4,6 +4,7 @@ class Accidental(var type: String) {
         "doubleflat" -> "\uD834\uDD2B"
         "flat" -> "♭"
         "natural" -> ""
+        "naturalneeded" -> "♮"
         "sharp" -> "♯"
         "doublesharp" -> "\uD834\uDD2A"
         else -> "error"
