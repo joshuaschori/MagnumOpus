@@ -1,10 +1,31 @@
 // TODO @Serializable
-class Scale(val scaleQuality: String = "major") {
-    /*
+class Scale(val root: Pitch, val scaleQuality: String = "major") {
 
-    val numberOfFlats: Int = 0
-    val numberOfSharps: Int = 0
+    var numberOfFlats: Int = 0
+    var numberOfSharps: Int = 0
+    val scaleIntervals: List<Int> = when (scaleQuality) {
+        "major" -> listOf(0, 2, 4, 5, 7, 9, 11)
+        "minor" -> listOf(0, 2, 3, 5, 7, 8, 10)
+        else -> listOf()
+    }
+    var scalePitches: List<Pitch> = listOf()
 
-     */
+    init {
+        for ((index, interval) in scaleIntervals.withIndex()) {
+            scalePitches += Pitch(root.midiValue + interval)
 
+            scalePitches[index].chosenReading = PitchSpelling(
+                scalePitches[index].chromaticValue,
+                root.chosenReading.pitchLetter.letterAtInterval(index),
+                Accidental("unknown")
+            )
+
+            when (scalePitches[index].chosenReading.accidental.type) {
+                "doubleflat" -> numberOfFlats += 2
+                "flat" -> numberOfFlats++
+                "sharp" -> numberOfSharps++
+                "doublesharp" -> numberOfSharps += 2
+            }
+        }
+    }
 }

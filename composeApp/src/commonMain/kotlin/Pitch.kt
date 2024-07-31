@@ -3,6 +3,7 @@ import kotlin.math.floor
 // TODO @Serializable
 data class Pitch(val midiValue: Int) {
     val octave: Int = floor((midiValue / 12).toFloat()).toInt()
+    val chromaticValue: Int = midiValue % 12
     val hasNatural: Boolean = when (midiValue % 12) {
         0,2,4,5,7,9,11 -> true
         1,3,6,8,10 -> false

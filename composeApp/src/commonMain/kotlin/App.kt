@@ -1,5 +1,7 @@
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,6 +16,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Dehaze
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
@@ -34,13 +37,20 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
@@ -51,6 +61,7 @@ import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.floor
 
 /*
@@ -89,7 +100,7 @@ fun App() {
     // TODO can't encode mutable state
     //settings.encodeValue(Guitar.serializer(), "Current Guitar", guitarExample)
 
-
+    val navigationState: String = "Chord Identification"
 
 
     MaterialTheme() {
@@ -101,17 +112,16 @@ fun App() {
             drawerState = drawerState,
             drawerContent = {
                 ModalDrawerSheet {
-                    Text("Drawer title", modifier = Modifier.padding(16.dp))
+                    Text("Magnum Opus", modifier = Modifier.padding(16.dp))
                     Divider()
                     NavigationDrawerItem(
-                        label = { Text(text = "Drawer Item") },
+                        label = { Text(text = "Chord Identification") },
                         selected = false,
                         onClick = { }
                     )
-                    // ...other drawer items
                 }
             },
-            gesturesEnabled = false
+            gesturesEnabled = drawerState.isOpen
         ) {
             Scaffold(
                 topBar = {
@@ -140,7 +150,7 @@ fun App() {
                             }
                         },
                         title = {
-                            Text("Magnum Opus")
+                            Text(navigationState)
                         }
                     )
                 },
@@ -148,21 +158,6 @@ fun App() {
                 bottomBar = {
                     BottomAppBar(
                         actions = {
-                            IconButton(onClick = { /* do something */ }) {
-                                Icon(Icons.Filled.Check, contentDescription = "Localized description")
-                            }
-                            IconButton(onClick = { /* do something */ }) {
-                                Icon(
-                                    Icons.Filled.Edit,
-                                    contentDescription = "Localized description",
-                                )
-                            }
-                            IconButton(onClick = { /* do something */ }) {
-                                Icon(
-                                    Icons.Filled.Home,
-                                    contentDescription = "Localized description",
-                                )
-                            }
                             IconButton(onClick = { /* do something */ }) {
                                 Icon(
                                     Icons.Filled.Star,
@@ -176,15 +171,14 @@ fun App() {
                                 containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
                                 elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                             ) {
-                                Icon(Icons.Filled.Add, "Localized description")
+                                Icon(Icons.Filled.Clear, "Localized description")
                             }
                         }
                     )
                 }
             ) { innerPadding ->
                 // content on screen
-                val navigationState: String = "Home"
-                if (navigationState == "Home") {
+                if (navigationState == "Chord Identification") {
                     Row(
                         modifier = Modifier
                             .fillMaxHeight()

@@ -17,19 +17,22 @@
 // should C G B D F A be C13(no 3) or G13 ??? suspended ??? if second / fourth is below fifth / seventh? prob C sus
 // should be Eb minor and not D# minor, because D# minor is the relative minor of B#
 // should be first inversion major chord, not minor chord with a b6
-// TODO bass bonus relevancy?
 // TODO chord's conceptual structure vs intervallic structure
+// TODO classical vs jazz vs etc options
 // TODO advanced settings to hide things for first time user
 // TODO polychords
 // TODO bass notes, slash chords, inversions
 // TODO bonus score for designated chord structures?
-// TODO decide between chord quality: major, minor, suspended, augmented, split 3rd
-// TODO double sharp and double flat symbols, fancier sharp and flat symbols, natural symbol
 // TODO "sets" ( 0 1 7 ) ( 0 6 7 ) etc
-// TODO "chord" shows up when there's just an octave or unison?
+
+// TODO subtract relevancy for dissonant intervals?
+// TODO for example, if you have a second, the lower in pitch it is, the less relevant the chord interpretation becomes
+// TODO fullscore and halfscore scaled based on midivalue in a way that's more spread out across the full "score" range (120 and 60)
+
+// TODO move chosenReading idea into a pitchInterpretations variable in chord that keeps track of the root,
+// TODO and possible natural, sharp, flat interpretations, like a toggle or something
 
 // TODO @Serializable
-// TODO order pitches by midiValue, in the case that a higher string is a lower pitch???
 class ChordInterpretation(
     val root: Pitch,
     val bassNote: Pitch,
@@ -37,39 +40,39 @@ class ChordInterpretation(
 ) {
     companion object {
         // constants for relevancy score
-        const val octaveScoringFactor: Float = 1.0f
-        const val duplicateNoteScoringFactor: Float = 0.5f
-        const val fullScore = 30.0f
-        const val halfScore = 15.0f
-        const val bassNoteBonus = 15.0f
+        const val OCTAVE_SCORING_FACTOR: Float = 0.5f
+        const val DUPLICATE_SCORING_FACTOR: Float = 0.5f
+        const val FULL_SCORE = 128.0f
+        const val HALF_SCORE = 64.0f
+        const val BASS_NOTE_BONUS = 32.0f
 
         // chromatic interval values
-        const val perfectUnison: Int = 0
-        const val minorSecond: Int = 1
-        const val majorSecond: Int = 2
-        const val augmentedSecond: Int = 3
-        const val minorThird: Int = 3
-        const val majorThird: Int = 4
-        const val perfectFourth: Int = 5
-        const val augmentedFourth: Int = 6
-        const val diminishedFifth: Int = 6
-        const val perfectFifth: Int = 7
-        const val augmentedFifth: Int = 8
-        const val minorSixth: Int = 8
-        const val majorSixth: Int = 9
-        const val augmentedSixth: Int = 10
-        const val diminishedSeventh: Int = 9
-        const val minorSeventh: Int = 10
-        const val majorSeventh: Int = 11
+        const val PERFECT_UNISON: Int = 0
+        const val MINOR_SECOND: Int = 1
+        const val MAJOR_SECOND: Int = 2
+        const val AUGMENTED_SECOND: Int = 3
+        const val MINOR_THIRD: Int = 3
+        const val MAJOR_THIRD: Int = 4
+        const val PERFECT_FOURTH: Int = 5
+        const val AUGMENTED_FOURTH: Int = 6
+        const val DIMINISHED_FIFTH: Int = 6
+        const val PERFECT_FIFTH: Int = 7
+        const val AUGMENTED_FIFTH: Int = 8
+        const val MINOR_SIXTH: Int = 8
+        const val MAJOR_SIXTH: Int = 9
+        const val AUGMENTED_SIXTH: Int = 10
+        const val DIMINISHED_SEVENTH: Int = 9
+        const val MINOR_SEVENTH: Int = 10
+        const val MAJOR_SEVENTH: Int = 11
 
         // letter interval values
-        const val unison: Int = 0
-        const val second: Int = 1
-        const val third: Int = 2
-        const val fourth: Int = 3
-        const val fifth: Int = 4
-        const val sixth: Int = 5
-        const val seventh: Int = 6
+        const val UNISON: Int = 0
+        const val SECOND: Int = 1
+        const val THIRD: Int = 2
+        const val FOURTH: Int = 3
+        const val FIFTH: Int = 4
+        const val SIXTH: Int = 5
+        const val SEVENTH: Int = 6
     }
 
     var chosenRoot: Pitch = root.copy()
@@ -103,27 +106,26 @@ class ChordInterpretation(
         }
 
         // default pairings of chromatic intervals with letter intervals, updated later when necessary
-        intervals[perfectUnison].letterInterval = unison
-        intervals[minorSecond].letterInterval = second
-        intervals[majorSecond].letterInterval = second
-        intervals[minorThird].letterInterval = third
-        intervals[majorThird].letterInterval = third
-        intervals[perfectFourth].letterInterval = fourth
-        intervals[augmentedFourth].letterInterval = fourth
-        intervals[perfectFifth].letterInterval = fifth
-        intervals[minorSixth].letterInterval = sixth
-        intervals[majorSixth].letterInterval = sixth
-        intervals[minorSeventh].letterInterval = seventh
-        intervals[majorSeventh].letterInterval = seventh
+        intervals[PERFECT_UNISON].letterInterval = UNISON
+        intervals[MINOR_SECOND].letterInterval = SECOND
+        intervals[MAJOR_SECOND].letterInterval = SECOND
+        intervals[MINOR_THIRD].letterInterval = THIRD
+        intervals[MAJOR_THIRD].letterInterval = THIRD
+        intervals[PERFECT_FOURTH].letterInterval = FOURTH
+        intervals[AUGMENTED_FOURTH].letterInterval = FOURTH
+        intervals[PERFECT_FIFTH].letterInterval = FIFTH
+        intervals[MINOR_SIXTH].letterInterval = SIXTH
+        intervals[MAJOR_SIXTH].letterInterval = SIXTH
+        intervals[MINOR_SEVENTH].letterInterval = SEVENTH
+        intervals[MAJOR_SEVENTH].letterInterval = SEVENTH
 
-        // TODO convert equation so instead of octave, based on raw midiValue
         fun applyRelevancy(interval: Int, score: Float) {
 
-            relevancyScore += score - chosenPitches[intervals[interval].lowestPitchIndex].octave * octaveScoringFactor
+            relevancyScore += score - chosenPitches[intervals[interval].lowestPitchIndex].midiValue * OCTAVE_SCORING_FACTOR
 
             if (intervals[interval].duplicatePitchIndexes.isNotEmpty()) {
                 for (index in intervals[interval].duplicatePitchIndexes) {
-                    relevancyScore += ( score - chosenPitches[index].octave * octaveScoringFactor ) * duplicateNoteScoringFactor
+                    relevancyScore += ( score - chosenPitches[index].midiValue * OCTAVE_SCORING_FACTOR ) * DUPLICATE_SCORING_FACTOR
                 }
             }
 
@@ -143,12 +145,12 @@ class ChordInterpretation(
             }
 
             if (extensionNeeded) {
-                if (diminishedFifth in listOfExtensions &&
+                if (DIMINISHED_FIFTH in listOfExtensions &&
                     chordQuality != "diminished" &&
                     chordQuality != "augmented" &&
-                    !intervals[perfectFifth].inChord
+                    !intervals[PERFECT_FIFTH].inChord
                     ) {
-                    intervals[diminishedFifth].letterInterval = fifth
+                    intervals[DIMINISHED_FIFTH].letterInterval = FIFTH
 
                     if (addOrMod == "mod") {
                         extensions = extensions + "♭5"
@@ -157,19 +159,19 @@ class ChordInterpretation(
                         extensionsPrefix += "♭5"
                     }
                 }
-                if (minorSecond in listOfExtensions) {
+                if (MINOR_SECOND in listOfExtensions) {
                     extensions = extensions + "♭9"
                 }
-                if (majorSecond in listOfExtensions && chordQuality != "suspended2") {
+                if (MAJOR_SECOND in listOfExtensions && chordQuality != "suspended2") {
                     if (addOrMod == "mod" &&
                         // unused possibility to leave out of 9 chords:
                         // (intervals[perfectFourth].inChord || intervals[majorSixth].inChord) &&
-                        (intervals[minorSecond].inChord || intervals[augmentedSecond].inChord)
+                        (intervals[MINOR_SECOND].inChord || intervals[AUGMENTED_SECOND].inChord)
                         ) {
                         extensions = extensions + "♮9"
                     }
-                    else if (addOrMod == "add" && !intervals[majorSixth].inChord) {
-                        if (intervals[minorSecond].inChord || intervals[augmentedSecond].inChord) {
+                    else if (addOrMod == "add" && !intervals[MAJOR_SIXTH].inChord) {
+                        if (intervals[MINOR_SECOND].inChord || intervals[AUGMENTED_SECOND].inChord) {
                             extensions = extensions + "♮9"
                         }
                         else {
@@ -177,17 +179,17 @@ class ChordInterpretation(
                         }
                     }
                 }
-                if (augmentedSecond in listOfExtensions) {
-                    if (intervals[majorThird].inChord) {
+                if (AUGMENTED_SECOND in listOfExtensions) {
+                    if (intervals[MAJOR_THIRD].inChord) {
                         extensions = extensions + "♯9"
                         // unused possible subjective reading:
                         // intervals[augmentedSecond].letterInterval = second
                     }
                 }
-                if (perfectFourth in listOfExtensions && chordQuality != "suspended4") {
+                if (PERFECT_FOURTH in listOfExtensions && chordQuality != "suspended4") {
                     if (addOrMod == "mod" &&
-                        intervals[augmentedFourth].inChord &&
-                        intervals[augmentedFourth].letterInterval == fourth &&
+                        intervals[AUGMENTED_FOURTH].inChord &&
+                        intervals[AUGMENTED_FOURTH].letterInterval == FOURTH &&
                         // unused possibility to leave out of 11 chords:
                         // intervals[majorSixth].inChord &&
                         chordQuality != "diminished"
@@ -195,7 +197,7 @@ class ChordInterpretation(
                         extensions = extensions + "♮11"
                     }
                     else if (addOrMod == "add") {
-                        if (intervals[augmentedFourth].inChord && intervals[augmentedFourth].letterInterval == fourth) {
+                        if (intervals[AUGMENTED_FOURTH].inChord && intervals[AUGMENTED_FOURTH].letterInterval == FOURTH) {
                             extensions = extensions + "♮11"
                         }
                         else {
@@ -203,24 +205,24 @@ class ChordInterpretation(
                         }
                     }
                 }
-                if (augmentedFourth in listOfExtensions &&
+                if (AUGMENTED_FOURTH in listOfExtensions &&
                     chordQuality != "diminished" &&
-                    (intervals[perfectFifth].inChord || chordQuality == "augmented")
+                    (intervals[PERFECT_FIFTH].inChord || chordQuality == "augmented")
                     ) {
                     extensions = extensions + "♯11"
                 }
-                if (minorSixth in listOfExtensions) {
-                    if (addOrMod == "mod" && intervals[perfectFifth].inChord) {
+                if (MINOR_SIXTH in listOfExtensions) {
+                    if (addOrMod == "mod" && intervals[PERFECT_FIFTH].inChord) {
                         extensions = extensions + "♭13"
                     }
-                    else if (addOrMod == "add" && intervals[perfectFifth].inChord && intervals[majorSixth].inChord) {
+                    else if (addOrMod == "add" && intervals[PERFECT_FIFTH].inChord && intervals[MAJOR_SIXTH].inChord) {
                         extensions = extensions + "♭13"
                     }
                 }
-                if (augmentedSixth in listOfExtensions) {
-                    if (intervals[majorSeventh].inChord) {
+                if (AUGMENTED_SIXTH in listOfExtensions) {
+                    if (intervals[MAJOR_SEVENTH].inChord) {
                         extensions = extensions + "♯13"
-                        intervals[augmentedSixth].letterInterval = sixth
+                        intervals[AUGMENTED_SIXTH].letterInterval = SIXTH
                     }
                 }
             }
@@ -231,182 +233,182 @@ class ChordInterpretation(
         }
 
         // apply relevancy for root note(s)
-        applyRelevancy(perfectUnison, fullScore)
+        applyRelevancy(PERFECT_UNISON, FULL_SCORE)
 
         // apply relevancy bonus for bass note being the root note
         if (root.midiValue == bassNote.midiValue) {
-            relevancyScore += bassNoteBonus
+            relevancyScore += BASS_NOTE_BONUS
         }
 
         // determine identity of chord while applying relevancy for appropriate intervals
-        if (intervals[majorThird].inChord) { chordQuality = "major"; chordType = "";
-            applyRelevancy(majorThird, fullScore)
+        if (intervals[MAJOR_THIRD].inChord) { chordQuality = "major"; chordType = ""
+            applyRelevancy(MAJOR_THIRD, FULL_SCORE)
 
-            if (intervals[perfectFifth].inChord || !intervals[augmentedFifth].inChord) {
-                if (intervals[perfectFifth].inChord) { applyRelevancy(perfectFifth, fullScore) }
+            if (intervals[PERFECT_FIFTH].inChord || !intervals[AUGMENTED_FIFTH].inChord) {
+                if (intervals[PERFECT_FIFTH].inChord) { applyRelevancy(PERFECT_FIFTH, FULL_SCORE) }
 
-                if (intervals[majorSeventh].inChord) { chordType = "maj7"
-                    if (intervals[majorSixth].inChord) { chordType = "maj13" }
-                    else if (intervals[perfectFourth].inChord) { chordType = "maj11" }
-                    else if (intervals[majorSecond].inChord) { chordType = "maj9" }
+                if (intervals[MAJOR_SEVENTH].inChord) { chordType = "maj7"
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "maj13" }
+                    else if (intervals[PERFECT_FOURTH].inChord) { chordType = "maj11" }
+                    else if (intervals[MAJOR_SECOND].inChord) { chordType = "maj9" }
 
                     applyExtensions("mod")
                 }
-                else if (intervals[minorSeventh].inChord) { chordType = "7"
-                    if (intervals[majorSixth].inChord) { chordType = "13" }
-                    else if (intervals[perfectFourth].inChord) { chordType = "11" }
-                    else if (intervals[majorSecond].inChord) { chordType = "9" }
+                else if (intervals[MINOR_SEVENTH].inChord) { chordType = "7"
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "13" }
+                    else if (intervals[PERFECT_FOURTH].inChord) { chordType = "11" }
+                    else if (intervals[MAJOR_SECOND].inChord) { chordType = "9" }
 
                     applyExtensions("mod")
                 }
                 else {
-                    if (intervals[majorSixth].inChord) { chordType = "6"
-                        if (intervals[majorSecond].inChord) { chordType = "6/9" }
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "6"
+                        if (intervals[MAJOR_SECOND].inChord) { chordType = "6/9" }
                     }
-                    else if (intervals[minorSixth].inChord) { chordType = "(♭6)" }
+                    else if (intervals[MINOR_SIXTH].inChord) { chordType = "(♭6)" }
 
                     applyExtensions("add")
                 }
             }
 
-            else if (intervals[augmentedFifth].inChord) { chordQuality = "augmented"; chordType = "+"
-                applyRelevancy(augmentedFifth, fullScore)
-                intervals[augmentedFifth].letterInterval = fifth
+            else if (intervals[AUGMENTED_FIFTH].inChord) { chordQuality = "augmented"; chordType = "+"
+                applyRelevancy(AUGMENTED_FIFTH, FULL_SCORE)
+                intervals[AUGMENTED_FIFTH].letterInterval = FIFTH
 
-                if (intervals[majorSeventh].inChord) { chordType = "+maj7"
-                    if (intervals[majorSixth].inChord) { chordType = "+maj13" }
-                    else if (intervals[perfectFourth].inChord) { chordType = "+maj11" }
-                    else if (intervals[majorSecond].inChord) { chordType = "+maj9" }
+                if (intervals[MAJOR_SEVENTH].inChord) { chordType = "+maj7"
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "+maj13" }
+                    else if (intervals[PERFECT_FOURTH].inChord) { chordType = "+maj11" }
+                    else if (intervals[MAJOR_SECOND].inChord) { chordType = "+maj9" }
 
                     applyExtensions("mod")
                 }
-                else if (intervals[minorSeventh].inChord) { chordType = "+7"
-                    if (intervals[majorSixth].inChord) { chordType = "+13" }
-                    else if (intervals[perfectFourth].inChord) { chordType = "+11" }
-                    else if (intervals[majorSecond].inChord) { chordType = "+9" }
+                else if (intervals[MINOR_SEVENTH].inChord) { chordType = "+7"
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "+13" }
+                    else if (intervals[PERFECT_FOURTH].inChord) { chordType = "+11" }
+                    else if (intervals[MAJOR_SECOND].inChord) { chordType = "+9" }
 
                     applyExtensions("mod")
                 }
                 else {
-                    if (intervals[majorSixth].inChord) { chordType = "+6"
-                        if (intervals[majorSecond].inChord) { chordType = "+6/9" }
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "+6"
+                        if (intervals[MAJOR_SECOND].inChord) { chordType = "+6/9" }
                     }
 
                     applyExtensions("add")
                 }
             }
         }
-        else if (intervals[minorThird].inChord) { chordQuality = "minor"; chordType = "m";
-            applyRelevancy(minorThird, fullScore)
+        else if (intervals[MINOR_THIRD].inChord) { chordQuality = "minor"; chordType = "m"
+            applyRelevancy(MINOR_THIRD, FULL_SCORE)
 
-            if (intervals[perfectFifth].inChord || !intervals[diminishedFifth].inChord) {
-                if (intervals[perfectFifth].inChord) { applyRelevancy(perfectFifth, fullScore) }
+            if (intervals[PERFECT_FIFTH].inChord || !intervals[DIMINISHED_FIFTH].inChord) {
+                if (intervals[PERFECT_FIFTH].inChord) { applyRelevancy(PERFECT_FIFTH, FULL_SCORE) }
 
-                if (intervals[majorSeventh].inChord) {
+                if (intervals[MAJOR_SEVENTH].inChord) {
                     chordType = "m(maj7)"
-                    if (intervals[majorSixth].inChord) { chordType = "m(maj13)" }
-                    else if (intervals[perfectFourth].inChord) { chordType = "m(maj11)" }
-                    else if (intervals[majorSecond].inChord) { chordType = "m(maj9)" }
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "m(maj13)" }
+                    else if (intervals[PERFECT_FOURTH].inChord) { chordType = "m(maj11)" }
+                    else if (intervals[MAJOR_SECOND].inChord) { chordType = "m(maj9)" }
 
                     applyExtensions("mod")
                 }
-                else if (intervals[minorSeventh].inChord) { chordType = "m7"
-                    if (intervals[majorSixth].inChord) { chordType = "m13" }
-                    else if (intervals[perfectFourth].inChord) { chordType = "m11" }
-                    else if (intervals[majorSecond].inChord) { chordType = "m9" }
+                else if (intervals[MINOR_SEVENTH].inChord) { chordType = "m7"
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "m13" }
+                    else if (intervals[PERFECT_FOURTH].inChord) { chordType = "m11" }
+                    else if (intervals[MAJOR_SECOND].inChord) { chordType = "m9" }
 
                     applyExtensions("mod")
                 }
                 else {
-                    if (intervals[majorSixth].inChord) { chordType = "m6"
-                        if (intervals[majorSecond].inChord) { chordType = "m6/9" }
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "m6"
+                        if (intervals[MAJOR_SECOND].inChord) { chordType = "m6/9" }
                     }
-                    else if (intervals[minorSixth].inChord) { chordType = "m♭6" }
+                    else if (intervals[MINOR_SIXTH].inChord) { chordType = "m♭6" }
 
                     applyExtensions("add")
                 }
             }
 
-            else if (intervals[diminishedFifth].inChord) { chordQuality = "diminished"; chordType = "°";
-                applyRelevancy(diminishedFifth, fullScore)
-                intervals[diminishedFifth].letterInterval = fifth
+            else if (intervals[DIMINISHED_FIFTH].inChord) { chordQuality = "diminished"; chordType = "°"
+                applyRelevancy(DIMINISHED_FIFTH, FULL_SCORE)
+                intervals[DIMINISHED_FIFTH].letterInterval = FIFTH
 
-                if (intervals[majorSeventh].inChord) { chordType = "°maj7"
-                    if (intervals[majorSixth].inChord) { chordType = "°maj13" }
-                    else if (intervals[perfectFourth].inChord) { chordType = "°maj11" }
-                    else if (intervals[majorSecond].inChord) { chordType = "°maj9" }
-
-                    applyExtensions("mod")
-                }
-                else if (intervals[minorSeventh].inChord) { chordType = "ø7"
-                    if (intervals[majorSixth].inChord) { chordType = "ø13" }
-                    else if (intervals[perfectFourth].inChord) { chordType = "ø11" }
-                    else if (intervals[majorSecond].inChord) { chordType = "ø9" }
+                if (intervals[MAJOR_SEVENTH].inChord) { chordType = "°maj7"
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "°maj13" }
+                    else if (intervals[PERFECT_FOURTH].inChord) { chordType = "°maj11" }
+                    else if (intervals[MAJOR_SECOND].inChord) { chordType = "°maj9" }
 
                     applyExtensions("mod")
                 }
-                else if (intervals[diminishedSeventh].inChord) { chordType = "°7"; intervals[diminishedSeventh].letterInterval = seventh
-                    if (intervals[perfectFourth].inChord) { chordType = "°11" }
-                    else if (intervals[majorSecond].inChord) { chordType = "°9" }
+                else if (intervals[MINOR_SEVENTH].inChord) { chordType = "ø7"
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "ø13" }
+                    else if (intervals[PERFECT_FOURTH].inChord) { chordType = "ø11" }
+                    else if (intervals[MAJOR_SECOND].inChord) { chordType = "ø9" }
+
+                    applyExtensions("mod")
+                }
+                else if (intervals[DIMINISHED_SEVENTH].inChord) { chordType = "°7"; intervals[DIMINISHED_SEVENTH].letterInterval = SEVENTH
+                    if (intervals[PERFECT_FOURTH].inChord) { chordType = "°11" }
+                    else if (intervals[MAJOR_SECOND].inChord) { chordType = "°9" }
 
                     applyExtensions("mod")
                 }
                 else {
-                    if (intervals[majorSixth].inChord) { chordType = "°6"
-                        if (intervals[majorSecond].inChord) { chordType = "°6/9" }
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "°6"
+                        if (intervals[MAJOR_SECOND].inChord) { chordType = "°6/9" }
                     }
-                    else if (intervals[minorSixth].inChord) { chordType = "°♭6" }
+                    else if (intervals[MINOR_SIXTH].inChord) { chordType = "°♭6" }
 
                     applyExtensions("add")
                 }
             }
         }
-        else if (intervals[perfectFourth].inChord) { chordQuality = "suspended4"; chordType = "sus4";
-            applyRelevancy(perfectFourth, halfScore)
+        else if (intervals[PERFECT_FOURTH].inChord) { chordQuality = "suspended4"; chordType = "sus4"
+            applyRelevancy(PERFECT_FOURTH, HALF_SCORE)
 
-            if (intervals[perfectFifth].inChord) { applyRelevancy(perfectFifth, fullScore) }
+            if (intervals[PERFECT_FIFTH].inChord) { applyRelevancy(PERFECT_FIFTH, FULL_SCORE) }
 
-            if (intervals[majorSeventh].inChord) { chordType = "maj7sus4"
-                if (intervals[majorSixth].inChord) { chordType = "maj13sus4" }
-                else if (intervals[majorSecond].inChord) { chordType = "maj9sus4" }
+            if (intervals[MAJOR_SEVENTH].inChord) { chordType = "maj7sus4"
+                if (intervals[MAJOR_SIXTH].inChord) { chordType = "maj13sus4" }
+                else if (intervals[MAJOR_SECOND].inChord) { chordType = "maj9sus4" }
 
                 applyExtensions("mod")
             }
-            else if (intervals[minorSeventh].inChord) { chordType = "7sus4"
-                if (intervals[majorSixth].inChord) { chordType = "13sus4" }
-                else if (intervals[majorSecond].inChord) { chordType = "9sus4" }
+            else if (intervals[MINOR_SEVENTH].inChord) { chordType = "7sus4"
+                if (intervals[MAJOR_SIXTH].inChord) { chordType = "13sus4" }
+                else if (intervals[MAJOR_SECOND].inChord) { chordType = "9sus4" }
 
                 applyExtensions("mod")
             }
             else {
-                if (intervals[majorSixth].inChord) { chordType = "6sus4"
-                    if (intervals[majorSecond].inChord) { chordType = "6/9sus4" }
+                if (intervals[MAJOR_SIXTH].inChord) { chordType = "6sus4"
+                    if (intervals[MAJOR_SECOND].inChord) { chordType = "6/9sus4" }
                 }
-                else if (intervals[minorSixth].inChord) { chordType = "(♭6)sus4" }
+                else if (intervals[MINOR_SIXTH].inChord) { chordType = "(♭6)sus4" }
 
                 applyExtensions("add")
             }
         }
-        else if (intervals[majorSecond].inChord) { chordQuality = "suspended2"; chordType = "sus2"
-            applyRelevancy(majorSecond, halfScore)
+        else if (intervals[MAJOR_SECOND].inChord) { chordQuality = "suspended2"; chordType = "sus2"
+            applyRelevancy(MAJOR_SECOND, HALF_SCORE)
 
-            if (intervals[perfectFifth].inChord) { applyRelevancy(perfectFifth, fullScore) }
+            if (intervals[PERFECT_FIFTH].inChord) { applyRelevancy(PERFECT_FIFTH, FULL_SCORE) }
 
-            if (intervals[majorSeventh].inChord) { chordType = "maj7sus2"
-                if (intervals[majorSixth].inChord) { chordType = "maj13sus2" }
-                else if (intervals[perfectFourth].inChord) { chordType = "maj11sus2" }
+            if (intervals[MAJOR_SEVENTH].inChord) { chordType = "maj7sus2"
+                if (intervals[MAJOR_SIXTH].inChord) { chordType = "maj13sus2" }
+                else if (intervals[PERFECT_FOURTH].inChord) { chordType = "maj11sus2" }
 
                 applyExtensions("mod")
             }
-            else if (intervals[minorSeventh].inChord) { chordType = "7sus2"
-                if (intervals[majorSixth].inChord) { chordType = "13sus2" }
-                else if (intervals[perfectFourth].inChord) { chordType = "11sus2" }
+            else if (intervals[MINOR_SEVENTH].inChord) { chordType = "7sus2"
+                if (intervals[MAJOR_SIXTH].inChord) { chordType = "13sus2" }
+                else if (intervals[PERFECT_FOURTH].inChord) { chordType = "11sus2" }
 
                 applyExtensions("mod")
             }
             else {
-                if (intervals[majorSixth].inChord) { chordType = "6sus2" }
-                else if (intervals[minorSixth].inChord) { chordType = "(♭6)sus2" }
+                if (intervals[MAJOR_SIXTH].inChord) { chordType = "6sus2" }
+                else if (intervals[MINOR_SIXTH].inChord) { chordType = "(♭6)sus2" }
 
                 applyExtensions("add")
             }
@@ -414,67 +416,65 @@ class ChordInterpretation(
         else {
             chordQuality = "other"
 
-            if (intervals[perfectFifth].inChord) { chordType = "(no3)"
-                applyRelevancy(perfectFifth, fullScore)
+            if (intervals[PERFECT_FIFTH].inChord) { chordType = "(no3)"
+                applyRelevancy(PERFECT_FIFTH, FULL_SCORE)
 
-                if (intervals[majorSeventh].inChord) { chordType = "maj7(no3)"
-                    if (intervals[majorSixth].inChord) { chordType = "maj13(no3)" }
+                if (intervals[MAJOR_SEVENTH].inChord) { chordType = "maj7(no3)"
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "maj13(no3)" }
 
                     applyExtensions("mod")
                 }
-                else if (intervals[minorSeventh].inChord) { chordType = "7(no3)"
-                    if (intervals[majorSixth].inChord) { chordType = "13(no3)" }
+                else if (intervals[MINOR_SEVENTH].inChord) { chordType = "7(no3)"
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "13(no3)" }
 
                     applyExtensions("mod")
                 }
                 else {
-                    if (intervals[majorSixth].inChord) { chordType = "6(no3)" }
-                    else if (intervals[minorSixth].inChord) { chordType = "(♭6)(no3)" }
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "6(no3)" }
+                    else if (intervals[MINOR_SIXTH].inChord) { chordType = "(♭6)(no3)" }
 
                     applyExtensions("add")
                 }
             }
-            else if (intervals[diminishedFifth].inChord) { chordQuality = "diminished"; chordType = "°(no3)"
-                applyRelevancy(diminishedFifth, fullScore)
-                intervals[diminishedFifth].letterInterval = fifth
+            else if (intervals[DIMINISHED_FIFTH].inChord) { chordQuality = "diminished"; chordType = "°(no3)"
+                applyRelevancy(DIMINISHED_FIFTH, HALF_SCORE)
+                intervals[DIMINISHED_FIFTH].letterInterval = FIFTH
 
-                if (intervals[majorSeventh].inChord) { chordType = "°maj7(no3)"
-                    if (intervals[majorSixth].inChord) { chordType = "°maj13(no3)" }
-
-                    applyExtensions("mod")
-                }
-                else if (intervals[minorSeventh].inChord) { chordType = "ø7(no3)"
-                    if (intervals[majorSixth].inChord) { chordType = "ø13(no3)" }
+                if (intervals[MAJOR_SEVENTH].inChord) { chordType = "°maj7(no3)"
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "°maj13(no3)" }
 
                     applyExtensions("mod")
                 }
-                else if (intervals[diminishedSeventh].inChord) { chordType = "°7(no3)"; intervals[diminishedSeventh].letterInterval = seventh
+                else if (intervals[MINOR_SEVENTH].inChord) { chordType = "ø7(no3)"
+                    if (intervals[MAJOR_SIXTH].inChord) { chordType = "ø13(no3)" }
+
+                    applyExtensions("mod")
+                }
+                else if (intervals[DIMINISHED_SEVENTH].inChord) { chordType = "°7(no3)"; intervals[DIMINISHED_SEVENTH].letterInterval = SEVENTH
                     applyExtensions("mod")
                 }
                 else {
-                    if (intervals[minorSixth].inChord) { chordType = "°♭6(no3)" }
+                    if (intervals[MINOR_SIXTH].inChord) { chordType = "°♭6(no3)" }
 
                     applyExtensions("add")
                 }
             }
-            else if (intervals[majorSeventh].inChord) { chordType = "maj7(no3)"
-                applyRelevancy(majorSeventh, halfScore)
+            else if (intervals[MAJOR_SEVENTH].inChord) { chordType = "maj7(no3)"
+                applyRelevancy(MAJOR_SEVENTH, HALF_SCORE)
                 applyExtensions("mod")
             }
-            else if (intervals[minorSeventh].inChord) { chordType = "7(no3)"
-                applyRelevancy(minorSeventh, halfScore)
+            else if (intervals[MINOR_SEVENTH].inChord) { chordType = "7(no3)"
+                applyRelevancy(MINOR_SEVENTH, HALF_SCORE)
                 applyExtensions("mod")
             }
             else { chordType = "(no3)"
-                if (intervals[majorSixth].inChord) { chordType = "6(no3)" }
-                else if (intervals[minorSixth].inChord) { chordType = "(♭6)(no3)" }
+                if (intervals[MAJOR_SIXTH].inChord) { chordType = "6(no3)" }
+                else if (intervals[MINOR_SIXTH].inChord) { chordType = "(♭6)(no3)" }
 
                 applyExtensions("add")
             }
         }
 
-        // TODO move chosenReading idea into a pitchInterpretations variable in chord that keeps track of the root,
-        // TODO and possible natural, sharp, flat interpretations
         // determine pitch readings
         if (chosenRoot.hasNatural) {
             chosenRoot.chosenReading = chosenRoot.naturalReading
@@ -491,6 +491,7 @@ class ChordInterpretation(
                     )
                 }
             }
+
         }
         else {
             val flatRoot = chosenRoot.copy()
@@ -533,7 +534,7 @@ class ChordInterpretation(
                 }
             }
 
-            if (!intervals[perfectFifth].inChord && !intervals[diminishedFifth].inChord && !intervals[augmentedFifth].inChord) {
+            if (!intervals[PERFECT_FIFTH].inChord && !intervals[DIMINISHED_FIFTH].inChord && !intervals[AUGMENTED_FIFTH].inChord) {
                 val impliedFifth: Pitch = Pitch(root.midiValue + 7)
 
                 impliedFifth.chosenReading = PitchSpelling(
@@ -578,7 +579,7 @@ class ChordInterpretation(
                 }
             }
 
-            if (!intervals[perfectFifth].inChord && !intervals[diminishedFifth].inChord && !intervals[augmentedFifth].inChord) {
+            if (!intervals[PERFECT_FIFTH].inChord && !intervals[DIMINISHED_FIFTH].inChord && !intervals[AUGMENTED_FIFTH].inChord) {
                 val impliedFifth: Pitch = Pitch(root.midiValue + 7)
 
                 impliedFifth.chosenReading = PitchSpelling(
@@ -596,36 +597,48 @@ class ChordInterpretation(
                 }
             }
 
-            /*
-
-            TODO
-                if (numberOfFlats == numberOfSharps) {
-                    check if major or minor chord, and if the corresponding scales have more flats or sharps
-                }
-
-            TODO
-                will have to make scale class, that knows number of flats and sharps
-                also have to make chord interpretation tree update a chord quality variable somewhere
-                should make Eb minor instead of D# minor
-
-             */
-
             if (numberOfFlats < numberOfSharps) {
                 chosenRoot = flatRoot
                 for ((index, pitch) in chosenPitches.withIndex()) {
                     pitch.chosenReading = flatPitches[index].chosenReading
                 }
             }
-            else {
+            else if (numberOfSharps < numberOfFlats) {
                 chosenRoot = sharpRoot
                 for ((index, pitch) in chosenPitches.withIndex()) {
                     pitch.chosenReading = sharpPitches[index].chosenReading
+                }
+            }
+            else {
+
+                val scaleNumberOfFlats: Int = when (chordQuality) {
+                    "minor", "diminished" -> Scale(flatRoot, "minor").numberOfFlats
+                    else -> Scale(flatRoot, "major").numberOfFlats
+                }
+                val scaleNumberOfSharps: Int = when (chordQuality) {
+                    "minor", "diminished" -> Scale(sharpRoot, "minor").numberOfSharps
+                    else -> Scale(sharpRoot, "major").numberOfSharps
+                }
+
+                if (scaleNumberOfSharps < scaleNumberOfFlats) {
+                    chosenRoot = sharpRoot
+                    for ((index, pitch) in chosenPitches.withIndex()) {
+                        pitch.chosenReading = sharpPitches[index].chosenReading
+                    }
+                }
+                // flat is a better default, when considering leading tone for minor scales, etc
+                else {
+                    chosenRoot = flatRoot
+                    for ((index, pitch) in chosenPitches.withIndex()) {
+                        pitch.chosenReading = flatPitches[index].chosenReading
+                    }
                 }
             }
         }
 
         // combine chosenRoot and chordType to get the name of the chord
         chordName = chosenRoot.chosenReading.name + chordType
+
     }
 }
 

@@ -29,12 +29,14 @@ class Chord(val pitches: MutableList<Pitch>) {
         // determine chord spelling, which is the chord interpretation with highest relevancy score
         var tempScore: Float = 0f
         var tempIndex: Int = 0
+
         for ((index, chord) in chordInterpretationsList.withIndex()) {
             if (chord.relevancyScore > tempScore) {
                 tempScore = chord.relevancyScore
                 tempIndex = index
             }
         }
+
         chosenInterpretationIndex = tempIndex
         chosenChordName = chordInterpretationsList[chosenInterpretationIndex].chordName
         chosenChordExtensionsPrefix = chordInterpretationsList[chosenInterpretationIndex].extensionsPrefix

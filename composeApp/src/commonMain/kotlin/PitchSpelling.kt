@@ -1,5 +1,5 @@
 // TODO @Serializable
-class PitchSpelling(val chromaticValue: Int, val pitchLetter: PitchLetter, var accidental: Accidental) {
+class PitchSpelling(val chromaticValue: Int, val pitchLetter: PitchLetter, var accidental: Accidental = Accidental("unknown")) {
     var name: String = pitchLetter.name + accidental.symbol
 
     init {
