@@ -1,3 +1,5 @@
+package classes
+
 // TODO @Serializable
 class PitchLetter(val name: String) {
     val letterValue: Int = when (name) {

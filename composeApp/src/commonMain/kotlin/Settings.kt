@@ -1,4 +1,5 @@
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,9 +12,13 @@ import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -33,6 +38,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.TextButton
@@ -56,21 +62,32 @@ import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.SettingsListener
 import kotlin.math.roundToInt
 
+// TODO capo? add lower or higher string buttons?
+// TODO make scrollable when there's more guitar strings? whole window or that section?
+// TODO implement adding and removing strings
+
 @Composable
 fun Settings(navigationState: String, innerPadding: PaddingValues) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
             .padding(paddingValues = innerPadding)
+            .verticalScroll(rememberScrollState())
     ) {
 
+
+
         val numberOfStrings: Int = settings.getInt("number of strings", 6)
+
+
         var expanded by remember { mutableStateOf(false) }
-        var expandedStartScreen by remember { mutableStateOf(false) }
         val scrollState = rememberScrollState()
         val lazyListState = rememberLazyListState()
         val stringMidiValues: MutableList<Int> = mutableStateListOf()
-        var startScreenString: String = "Home"
+
+        val startScreenString: String = settings.getString("startScreen", "Home")
+        val radioOptions = listOf("Home", "Chord Display", "Chord Identification", "Settings")
+        val (selectedOption, onOptionSelected) = remember { mutableStateOf(startScreenString) }
 
         // if no tuning settings, populate with default tuning
         if (!settings.hasKey("1 string tuning")) {
@@ -91,10 +108,6 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
             }
         }
 
-        if (true) {
-            startScreenString = settings.getString("startScreen", "Home")
-        }
-
         // if string tuning is flagged to update, update and clear flags
         if (
             settings.getInt("updateString", 0) != 0 &&
@@ -108,11 +121,7 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
             settings.putInt("updateStringMidiValue", 999)
         }
 
-        Row(
-            //modifier = Modifier
-                //.fillMaxWidth()
-                //.background(MaterialTheme.colorScheme.primaryContainer)
-        ) {
+        Row() {
             Text(
                 "Guitar Setup:",
                 fontSize = 20.sp,
@@ -123,7 +132,9 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                     )
             )
         }
-        Spacer(modifier = Modifier.height(20.dp))
+
+        Spacer(modifier = Modifier.height(10.dp))
+
         Row() {
             Column(
                 modifier = Modifier
@@ -137,9 +148,25 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                 )
-                repeat(6) {
-                    ElevatedButton(
-                        onClick = {}
+                repeat(numberOfStrings) {
+                    OutlinedButton(
+                        onClick = {
+
+                            if (numberOfStrings < 12) {
+                                repeat(numberOfStrings - it) { index ->
+
+                                    val stringNumber = numberOfStrings + 1 - index
+                                    val stringPitch = settings.getInt("${stringNumber - 1} string tuning", 0)
+
+                                    settings.putInt("$stringNumber string tuning", stringPitch)
+                                }
+
+                                settings.putInt("number of strings", settings.getInt("number of strings", 6) + 1)
+
+                                stringMidiValues.removeAll(stringMidiValues)
+                            }
+
+                        }
                     ) {
                         Icon(
                             Icons.Outlined.Add,
@@ -157,9 +184,24 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                         .align(Alignment.CenterHorizontally)
                 )
 
-                repeat(6) {
-                    ElevatedButton(
-                        onClick = {}
+                repeat(numberOfStrings) {
+                    OutlinedButton(
+                        onClick = {
+                            if (numberOfStrings > 3) {
+                                repeat(numberOfStrings - it - 1) { index ->
+
+                                    val stringNumber = it + 1 + index
+                                    val stringPitch = settings.getInt("${it + 2 + index} string tuning", 0)
+
+                                    settings.putInt("$stringNumber string tuning", stringPitch)
+                                }
+
+                                settings.remove("${numberOfStrings} string tuning")
+                                settings.putInt("number of strings", settings.getInt("number of strings", 6) - 1)
+
+                                stringMidiValues.removeAll(stringMidiValues)
+                            }
+                        }
                     ) {
                         Icon(
                             Icons.Outlined.Remove,
@@ -171,18 +213,7 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
 
             Spacer(modifier = Modifier.width(20.dp))
 
-            Column(
-                /*
-                modifier = Modifier
-                    .padding(
-                        start = insetHorizontal.dp,
-                    )
-
-                 */
-            ) {
-
-                // TODO default screen?
-                // TODO capo? add lower or higher string buttons?
+            Column() {
 
                 Text(
                     "Change Tuning:",
@@ -263,7 +294,7 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                     scrollState = scrollState,
-                    modifier = Modifier.requiredSizeIn(maxHeight = 500f.dp)
+                    //modifier = Modifier.requiredSizeIn(maxHeight = 500f.dp)
                 ) {
 
                     val listOfPitches: List<Int> = (0..127).map {
@@ -276,16 +307,16 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                             .width(250f.dp)
                             .height(500f.dp)
                     ) {
-                        itemsIndexed(listOfPitches) { index, s ->
+                        itemsIndexed(listOfPitches) { index, _ ->
 
                             // TODO redundant functionality from before
                             val itemPitch = Pitch(index)
                             var stringNoteName = ""
                             if (itemPitch.hasNatural) {
-                                stringNoteName = itemPitch.naturalReading.name + itemPitch.octave
+                                stringNoteName = remember { itemPitch.naturalReading.name + itemPitch.octave }
                             } else {
                                 stringNoteName =
-                                    "${itemPitch.sharpReading.name}/${itemPitch.flatReading.name}${itemPitch.octave}"
+                                    remember { "${itemPitch.sharpReading.name}/${itemPitch.flatReading.name}${itemPitch.octave}" }
                             }
 
                             DropdownMenuItem(
@@ -310,66 +341,47 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
 
         Spacer(modifier = Modifier.height(30.dp))
 
+        // make radio buttons for start screen
         Row(
             modifier = Modifier
                 .padding(
                     start = insetHorizontal.dp
                 )
         ) {
-            Text(
-                "Start Screen:",
-                fontSize = 20.sp,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-            )
-            Spacer(modifier = Modifier.width(20.dp))
-            FilledTonalButton(
-                onClick = {
-                    expandedStartScreen = true
+        // Note that Modifier.selectableGroup() is essential to ensure correct accessibility behavior
+            Column(Modifier.selectableGroup()) {
+                Text(
+                    "Start Screen:",
+                    fontSize = 20.sp
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                radioOptions.forEach { text ->
+                    Row(
+                        Modifier.fillMaxWidth()
+                            //.height(56.dp)
+                            .selectable(
+                                selected = (text == selectedOption),
+                                onClick = {
+                                    onOptionSelected(text)
+                                    settings.putString("startScreen", text)
+                                }
+                            )
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (text == selectedOption),
+                            onClick = null // null recommended for accessibility with screenreaders
+                        )
+                        Text(
+                            text = text,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
                 }
-            ) {
-
-                Text(startScreenString)
-
-            }
-            DropdownMenu(
-                expanded = expandedStartScreen,
-                onDismissRequest = { expandedStartScreen = false },
-                //modifier = Modifier.requiredSizeIn(maxHeight = 500f.dp)
-            ) {
-
-                DropdownMenuItem(
-                    onClick = {
-                        settings.putString("startScreen", "Home")
-                        expandedStartScreen = false
-                    },
-                    text = { Text("Home") }
-                )
-
-                DropdownMenuItem(
-                    onClick = {
-                        settings.putString("startScreen", "Chord Display")
-                        expandedStartScreen = false
-                    },
-                    text = { Text("Chord Display") }
-                )
-
-                DropdownMenuItem(
-                    onClick = {
-                        settings.putString("startScreen", "Chord Identification")
-                        expandedStartScreen = false
-                    },
-                    text = { Text("Chord Identification") }
-                )
-
-                DropdownMenuItem(
-                    onClick = {
-                        settings.putString("startScreen", "Settings")
-                        expandedStartScreen = false
-                    },
-                    text = { Text("Settings") }
-                )
-
             }
         }
 
@@ -394,11 +406,15 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                 onClick = {
                     settings.clear()
                     stringMidiValues.removeAll(stringMidiValues)
+                    onOptionSelected("Home")
                 }
             ) {
                 Text("Restore Defaults")
             }
 
         }
+
+        Spacer(modifier = Modifier.height(30.dp))
+
     }
 }

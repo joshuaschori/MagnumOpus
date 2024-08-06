@@ -1,3 +1,5 @@
+package classes
+
 // TODO @Serializable
 class GuitarString(val tuning: Pitch) {
     val maxThickness: Float = 6.0f

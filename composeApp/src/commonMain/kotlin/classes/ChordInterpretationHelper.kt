@@ -1,3 +1,5 @@
+package classes
+
 // TODO @Serializable
 // TODO contain pitches in chord interpretation helper??? get rid of inUpperOctave? or not?
 class ChordInterpretationHelper() {

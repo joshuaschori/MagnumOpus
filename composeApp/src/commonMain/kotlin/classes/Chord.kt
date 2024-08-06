@@ -1,3 +1,5 @@
+package classes
+
 // TODO @Serializable
 class Chord(val pitches: MutableList<Pitch>) {
     val chordInterpretationsList: MutableList<ChordInterpretation> = mutableListOf()
@@ -21,7 +23,7 @@ class Chord(val pitches: MutableList<Pitch>) {
 
             val bassNote: Pitch = tempBassNote.copy()
 
-            // add ChordInterpretation to chordInterpretationsList
+            // add classes.ChordInterpretation to chordInterpretationsList
             chordInterpretationsList.add(ChordInterpretation(root = root, bassNote = bassNote, pitches = pitches))
 
         }

@@ -1,3 +1,5 @@
+package classes
+
 class Interval(name: String) {
     val chromaticInterval = when (name) {
         "unison" -> 0

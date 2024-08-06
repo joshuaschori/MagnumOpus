@@ -1,3 +1,5 @@
+package classes
+
 // TODO @Serializable
 class Scale(val root: Pitch, val scaleQuality: String = "major") {
 

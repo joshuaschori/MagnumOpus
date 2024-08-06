@@ -1,4 +1,4 @@
-// TODO create chord tests
+package classes// TODO create chord tests
 // food for thought, when adding score based on intervals:
 // when considering an extended chord with a missing 5th (C E X Bb D F A)
 // vs the same pitch classes spelled without any missing 5th (Bb D F A C E),
@@ -43,8 +43,8 @@ class ChordInterpretation(
         const val OCTAVE_SCORING_FACTOR: Float = 0.5f
         const val DUPLICATE_SCORING_FACTOR: Float = 0.5f
         const val FULL_SCORE = 128.0f
-        const val HALF_SCORE = 64.0f
-        const val BASS_NOTE_BONUS = 32.0f
+        // TODO?: const val HALF_SCORE = 64.0f
+        const val BASS_NOTE_BONUS = 128.0f
 
         // chromatic interval values
         const val PERFECT_UNISON: Int = 0
@@ -166,7 +166,8 @@ class ChordInterpretation(
                     if (addOrMod == "mod" &&
                         // unused possibility to leave out of 9 chords:
                         // (intervals[perfectFourth].inChord || intervals[majorSixth].inChord) &&
-                        (intervals[MINOR_SECOND].inChord || intervals[AUGMENTED_SECOND].inChord)
+                        (intervals[MINOR_SECOND].inChord ||
+                                ( intervals[AUGMENTED_SECOND].inChord) && intervals[AUGMENTED_SECOND].letterInterval == SECOND)
                         ) {
                         extensions = extensions + "♮9"
                     }
@@ -364,7 +365,7 @@ class ChordInterpretation(
             }
         }
         else if (intervals[PERFECT_FOURTH].inChord) { chordQuality = "suspended4"; chordType = "sus4"
-            applyRelevancy(PERFECT_FOURTH, HALF_SCORE)
+            // TODO?: applyRelevancy(PERFECT_FOURTH, HALF_SCORE)
 
             if (intervals[PERFECT_FIFTH].inChord) { applyRelevancy(PERFECT_FIFTH, FULL_SCORE) }
 
@@ -390,7 +391,7 @@ class ChordInterpretation(
             }
         }
         else if (intervals[MAJOR_SECOND].inChord) { chordQuality = "suspended2"; chordType = "sus2"
-            applyRelevancy(MAJOR_SECOND, HALF_SCORE)
+            // TODO?: applyRelevancy(MAJOR_SECOND, HALF_SCORE)
 
             if (intervals[PERFECT_FIFTH].inChord) { applyRelevancy(PERFECT_FIFTH, FULL_SCORE) }
 
@@ -437,7 +438,8 @@ class ChordInterpretation(
                 }
             }
             else if (intervals[DIMINISHED_FIFTH].inChord) { chordQuality = "diminished"; chordType = "°(no3)"
-                applyRelevancy(DIMINISHED_FIFTH, HALF_SCORE)
+                applyRelevancy(DIMINISHED_FIFTH, FULL_SCORE)
+                // TODO?: full or half score
                 intervals[DIMINISHED_FIFTH].letterInterval = FIFTH
 
                 if (intervals[MAJOR_SEVENTH].inChord) { chordType = "°maj7(no3)"
@@ -460,11 +462,11 @@ class ChordInterpretation(
                 }
             }
             else if (intervals[MAJOR_SEVENTH].inChord) { chordType = "maj7(no3)"
-                applyRelevancy(MAJOR_SEVENTH, HALF_SCORE)
+                // TODO?: applyRelevancy(MAJOR_SEVENTH, HALF_SCORE)
                 applyExtensions("mod")
             }
             else if (intervals[MINOR_SEVENTH].inChord) { chordType = "7(no3)"
-                applyRelevancy(MINOR_SEVENTH, HALF_SCORE)
+                // TODO?: applyRelevancy(MINOR_SEVENTH, HALF_SCORE)
                 applyExtensions("mod")
             }
             else { chordType = "(no3)"

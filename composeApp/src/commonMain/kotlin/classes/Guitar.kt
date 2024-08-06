@@ -1,12 +1,17 @@
+package classes
+
 import androidx.compose.ui.graphics.Color
+import settings
 
 // TODO @Serializable
 data class Guitar(
-    val numberOfFrets: Int,
     // TODO convert mutable lists to regular lists
     var fretMemory: MutableList<FretMemory> = mutableListOf(),
     val isDefaultGuitar: Boolean = false
 ) {
+    val numberOfFrets: Int = 12
+    val numberOfStrings: Int = settings.getInt("number of strings", 6)
+    val strings: MutableList<GuitarString> = mutableListOf()
     val lineColor: Color = Color.Black
     val lineThickness: Float = 1f
     val fretThickness: Float = 1f
@@ -17,15 +22,6 @@ data class Guitar(
     val fretMarkerSize: Float = 6f
     val frettedNoteSize: Float = stringSpacing / 2f * 0.9f
     val unfrettedSize: Float = frettedNoteSize / 2f
-    val strings: MutableList<GuitarString> = mutableListOf(
-        GuitarString(Pitch(16)),
-        GuitarString(Pitch(21)),
-        GuitarString(Pitch(26)),
-        GuitarString(Pitch(31)),
-        GuitarString(Pitch(35)),
-        GuitarString(Pitch(40))
-    )
-    val numberOfStrings: Int = strings.size
     val stringLocations: List<Float> = (1..numberOfStrings).map {
         stringSpacing * (it - 1)
     }
@@ -35,6 +31,21 @@ data class Guitar(
     val fretSelectionRadius = 14f
 
     init {
+        // get the tuning of each string from settings
+        repeat(numberOfStrings) {index ->
+            val stringIndex = numberOfStrings - index
+            val defaultValue = when (stringIndex) {
+                6 -> 16
+                5 -> 21
+                4 -> 26
+                3 -> 31
+                2 -> 35
+                1 -> 40
+                else -> 0
+            }
+            strings.add(GuitarString(Pitch(settings.getInt("$stringIndex string tuning", defaultValue))))
+        }
+
         // add default open string hidden values to fretMemory for each string
         if (isDefaultGuitar) {
             repeat(numberOfStrings) {stringIndex ->

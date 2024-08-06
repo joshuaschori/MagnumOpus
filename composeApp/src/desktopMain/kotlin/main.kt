@@ -12,7 +12,7 @@ fun main() = application {
 
     Window(
         onCloseRequest = ::exitApplication,
-        title = "MagnumOpus",
+        title = "Magnum Opus",
         state = state
     ) {
         window.minimumSize = Dimension(500, 800)
