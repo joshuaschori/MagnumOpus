@@ -1,51 +1,29 @@
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSizeIn
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Remove
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.MenuItemColors
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,28 +34,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import classes.GuitarString
 import classes.Pitch
-import com.russhwolf.settings.ObservableSettings
-import com.russhwolf.settings.SettingsListener
-import kotlin.math.roundToInt
-
-// TODO capo? add lower or higher string buttons?
-// TODO make scrollable when there's more guitar strings? whole window or that section?
-// TODO implement adding and removing strings
 
 @Composable
-fun Settings(navigationState: String, innerPadding: PaddingValues) {
+fun Settings(innerPadding: PaddingValues) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .padding(paddingValues = innerPadding)
-            .verticalScroll(rememberScrollState())
     ) {
 
         val numberOfStrings: Int = settings.getInt("number of strings", 6)
@@ -130,10 +96,7 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                 "Guitar Setup:",
                 fontSize = 20.sp,
                 modifier = Modifier
-                    .padding(
-                        top = insetVertical.dp,
-                        start = insetHorizontal.dp
-                    )
+                    .padding(top = insetVertical.dp)
             )
         }
 
@@ -143,21 +106,13 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
             Text(
                 "Strings:",
                 fontSize = 16.sp,
-                modifier = Modifier
-                    .padding(start = insetHorizontal.dp * 2)
-                //.align(Alignment.CenterVertically)
             )
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         Row {
-            Column(
-                modifier = Modifier
-                    .padding(
-                        start = insetHorizontal.dp * 2,
-                    )
-            ) {
+            Column {
                 Text(
                     "Add",
                     fontSize = 14.sp,
@@ -165,7 +120,7 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                         .align(Alignment.CenterHorizontally)
                 )
                 repeat(numberOfStrings) {
-                    OutlinedButton(
+                    FilledTonalButton(
                         onClick = {
 
                             if (numberOfStrings < 12) {
@@ -182,7 +137,9 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                                 stringMidiValues.removeAll(stringMidiValues)
                             }
 
-                        }
+                        },
+                        modifier = Modifier
+                            .width(60.dp)
                     ) {
                         Icon(
                             Icons.Outlined.Add,
@@ -192,9 +149,9 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                 }
             }
 
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.width(10.dp))
 
-            Column() {
+            Column {
                 Text(
                     "Remove",
                     fontSize = 14.sp,
@@ -203,7 +160,7 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                 )
 
                 repeat(numberOfStrings) {
-                    OutlinedButton(
+                    FilledTonalButton(
                         onClick = {
                             if (numberOfStrings > 3) {
                                 repeat(numberOfStrings - it - 1) { index ->
@@ -214,12 +171,14 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                                     settings.putInt("$stringNumber string tuning", stringPitch)
                                 }
 
-                                settings.remove("${numberOfStrings} string tuning")
+                                settings.remove("$numberOfStrings string tuning")
                                 settings.putInt("number of strings", settings.getInt("number of strings", 6) - 1)
 
                                 stringMidiValues.removeAll(stringMidiValues)
                             }
-                        }
+                        },
+                        modifier = Modifier
+                            .width(60.dp)
                     ) {
                         Icon(
                             Icons.Outlined.Remove,
@@ -229,27 +188,18 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                 }
             }
 
-            Spacer(modifier = Modifier.width(30.dp))
+            Spacer(modifier = Modifier.width(20.dp))
 
-            Column() {
+            Column {
 
                 Text(
-                    "Change Tuning:",
+                    "",
                     fontSize = 14.sp
                 )
 
                 // create string buttons
                 repeat(numberOfStrings) { index ->
                     val stringIndex = index + 1
-                    val defaultValue = when (stringIndex) {
-                        6 -> 16
-                        5 -> 21
-                        4 -> 26
-                        3 -> 31
-                        2 -> 35
-                        1 -> 40
-                        else -> 0
-                    }
 
                     fun ordinalNumbers(inputNumber: Int): String {
                         val stringSuffix: String = when (inputNumber % 10) {
@@ -262,46 +212,58 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                         return inputNumber.toString() + stringSuffix
                     }
 
-                    Row {
+                    val stringText = ordinalNumbers(stringIndex)
 
-                        val stringText = ordinalNumbers(stringIndex)
-
+                    Row(
+                        modifier = Modifier
+                            .height(48.dp)
+                    ) {
                         Text(
                             "$stringText String: ",
                             fontSize = 16.sp,
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
                         )
+                    }
+                }
+            }
+            Column {
 
-                        OutlinedButton(
-                            onClick = {
-                                expanded = true
-                                settings.putInt("updateString", stringIndex)
-                                val tempValue = settings.getInt("$stringIndex string tuning", 0)
-                                val selectedNote = if (tempValue > 0) {
-                                    tempValue
-                                } else {
-                                    0
-                                }
-                                settings.putInt("clickedStringPitch", selectedNote)
-                            }
-                        ) {
+                Text(
+                    "Tuning",
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
 
-                            val stringPitch =
-                                Pitch(settings.getInt("$stringIndex string tuning", defaultValue))
+                repeat(numberOfStrings) { index ->
+                    val stringIndex = index + 1
 
-                            var stringNoteName = ""
-                            if (stringPitch.hasNatural) {
-                                stringNoteName =
-                                    stringPitch.naturalReading.name + stringPitch.octave
+                    FilledTonalButton(
+                        onClick = {
+                            expanded = true
+                            settings.putInt("updateString", stringIndex)
+                            val tempValue = settings.getInt("$stringIndex string tuning", 0)
+                            val selectedNote = if (tempValue > 0) {
+                                tempValue
                             } else {
-                                stringNoteName =
-                                    "${stringPitch.sharpReading.name}/${stringPitch.flatReading.name}${stringPitch.octave}"
+                                0
                             }
+                            settings.putInt("clickedStringPitch", selectedNote)
+                        },
+                        modifier = Modifier.widthIn(100.dp)
+                    ) {
 
-                            Text(stringNoteName)
+                        val stringPitch =
+                            Pitch(settings.getInt("$stringIndex string tuning", 0))
 
+                        val stringNoteName = if (stringPitch.hasNatural) {
+                            stringPitch.naturalReading.name + stringPitch.octave
+                        } else {
+                            "${stringPitch.sharpReading.name}/${stringPitch.flatReading.name}${stringPitch.octave}"
                         }
+
+                        Text(stringNoteName)
 
                     }
                 }
@@ -314,7 +276,7 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                 ) {
 
                     val listOfPitches: List<Int> = (0..127).map {
-                        it
+                        127 - it
                     }
 
                     LazyColumn(
@@ -323,21 +285,18 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                             .width(200f.dp)
                             .height(500f.dp)
                     ) {
-                        itemsIndexed(listOfPitches) { index, _ ->
+                        itemsIndexed(listOfPitches) { _, midiValue ->
 
-                            // TODO redundant functionality from before
-                            val itemPitch = Pitch(index)
-                            var stringNoteName = ""
-                            if (itemPitch.hasNatural) {
-                                stringNoteName = remember { itemPitch.naturalReading.name + itemPitch.octave }
+                            val itemPitch = Pitch(midiValue)
+                            val stringNoteName = if (itemPitch.hasNatural) {
+                                remember { itemPitch.naturalReading.name + itemPitch.octave }
                             } else {
-                                stringNoteName =
-                                    remember { "${itemPitch.sharpReading.name}/${itemPitch.flatReading.name}${itemPitch.octave}" }
+                                remember { "${itemPitch.sharpReading.name}/${itemPitch.flatReading.name}${itemPitch.octave}" }
                             }
 
                             DropdownMenuItem(
                                 onClick = {
-                                    settings.putInt("updateStringMidiValue", index)
+                                    settings.putInt("updateStringMidiValue", midiValue)
                                     expanded = false
                                 },
                                 text = {
@@ -365,7 +324,7 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                 }
                 LaunchedEffect(expanded) {
                     if (expanded) {
-                        lazyListState.scrollToItem((settings.getInt("clickedStringPitch", 0) - 4))
+                        lazyListState.scrollToItem(127 - (settings.getInt("clickedStringPitch", 0) + 4))
                     }
                 }
 
@@ -380,10 +339,7 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
             Row {
                 Text(
                     "Number of Frets: ${sliderPosition.toInt()}",
-                    fontSize = 16.sp,
-                    modifier = Modifier
-                        .padding(start = insetHorizontal.dp * 2)
-                    //.align(Alignment.CenterVertically)
+                    fontSize = 16.sp
                 )
             }
 
@@ -397,7 +353,6 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                     steps = 10,
                     valueRange = 12f..24f,
                     modifier = Modifier
-                        .padding(start = insetHorizontal.dp * 2)
                         .width(350f.dp)
                 )
             }
@@ -406,13 +361,8 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
         Spacer(modifier = Modifier.height(20.dp))
 
         // make radio buttons for start screen
-        Row(
-            modifier = Modifier
-                .padding(
-                    start = insetHorizontal.dp
-                )
-        ) {
-        // Note that Modifier.selectableGroup() is essential to ensure correct accessibility behavior
+        Row {
+            // Note that Modifier.selectableGroup() is essential to ensure correct accessibility behavior
             Column(Modifier.selectableGroup()) {
                 Text(
                     "Start Screen:",
@@ -423,8 +373,7 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
 
                 radioOptions.forEach { text ->
                     Row(
-                        Modifier.fillMaxWidth()
-                            //.height(56.dp)
+                        Modifier
                             .selectable(
                                 selected = (text == selectedOption),
                                 onClick = {
@@ -432,12 +381,12 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
                                     settings.putString("startScreen", text)
                                 }
                             )
-                            .padding(horizontal = insetHorizontal.dp),
+                            .width(350.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
                             selected = (text == selectedOption),
-                            onClick = null // null recommended for accessibility with screenreaders
+                            onClick = null // null recommended for accessibility with screen-readers
                         )
                         Text(
                             text = text,
@@ -452,12 +401,7 @@ fun Settings(navigationState: String, innerPadding: PaddingValues) {
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        Row(
-            modifier = Modifier
-                .padding(
-                    start = insetHorizontal.dp
-                )
-        ) {
+        Row {
             Text(
                 "Reset:",
                 fontSize = 20.sp,

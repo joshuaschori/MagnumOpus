@@ -15,7 +15,7 @@ fun main() = application {
         title = "Magnum Opus",
         state = state
     ) {
-        window.minimumSize = Dimension(500, 800)
+        window.minimumSize = Dimension(500, 900)
         App()
     }
 }

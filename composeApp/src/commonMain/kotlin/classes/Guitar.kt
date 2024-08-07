@@ -13,7 +13,7 @@ data class Guitar(
     val lineColor: Color = Color.Black
     val lineThickness: Float = 1f
     val fretThickness: Float = 1f
-    val fretboardLength: Float = 500f * (numberOfFrets / 12)
+    val fretboardLength: Float = 500f * (numberOfFrets.toFloat() / 12)
     val stringSpacing: Float = 30f
     val fretSpacing: Float = fretboardLength / numberOfFrets
     val fretMarkers: List<Int> = listOf(3,5,7,9,12,15,17,19,21,24)

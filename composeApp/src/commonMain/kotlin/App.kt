@@ -1,4 +1,10 @@
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material3.MaterialTheme
@@ -16,6 +22,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.compose.AppTheme
@@ -54,8 +61,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
     // println(currentNumberOfStrings)
 */
 
-const val insetHorizontal = 30f
-const val insetVertical = 30f
+const val insetHorizontal = 24f
+const val insetVertical = 24f
 val settings: Settings = Settings()
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSerializationApi::class,
@@ -196,12 +203,20 @@ fun App() {
             ) { innerPadding ->
                 // content on screen
 
-                when (navigationState) {
-                    "Chord Display" -> ChordDisplay(navigationState = navigationState, innerPadding = innerPadding)
-                    "Chord Identification" -> ChordIdentification(navigationState = navigationState, innerPadding = innerPadding)
-                    "Home" -> Home(navigationState = navigationState, innerPadding = innerPadding)
-                    "Settings" -> Settings(navigationState = navigationState, innerPadding = innerPadding)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    when (navigationState) {
+                        "Chord Display" -> ChordDisplay(navigationState = navigationState, innerPadding = innerPadding)
+                        "Chord Identification" -> ChordIdentification(navigationState = navigationState, innerPadding = innerPadding)
+                        "Home" -> Home(navigationState = navigationState, innerPadding = innerPadding)
+                        "Settings" -> Settings(innerPadding = innerPadding)
+                    }
                 }
+
             }
         }
     }

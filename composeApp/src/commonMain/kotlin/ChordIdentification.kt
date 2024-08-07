@@ -1,13 +1,14 @@
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.Text
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -33,11 +34,10 @@ fun ChordIdentification(navigationState: String, innerPadding: PaddingValues) {
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxHeight()
             .padding(paddingValues = innerPadding)
-            .verticalScroll(rememberScrollState())
     ) {
-        if (settings.getInt("number of strings", 6) <= 8) {
+        if (settings.getInt("number of strings", 6) <= 6) {
 
             Row(
                 modifier = Modifier
@@ -53,6 +53,8 @@ fun ChordIdentification(navigationState: String, innerPadding: PaddingValues) {
                     }
                 )
 
+                Spacer(modifier = Modifier.width(20.dp))
+
                 ChordIdentificationText(
                     currentGuitar = currentGuitar
                 )
@@ -65,10 +67,7 @@ fun ChordIdentification(navigationState: String, innerPadding: PaddingValues) {
                     .fillMaxHeight()
             ) {
 
-                Column(
-                    modifier = Modifier
-                        .padding(start = insetHorizontal.dp)
-                ) {
+                Column {
                     ChordIdentificationText(
                         currentGuitar = currentGuitar
                     )
@@ -166,8 +165,8 @@ fun ChordIdentificationText(
 
         Text(
             currentTuningNoteNames.joinToString("  "),
-            fontSize = 20.sp,
-            modifier = Modifier
+            fontSize = 16.sp,
+            modifier = Modifier.widthIn(150.dp)
         )
 
         Text(
@@ -179,8 +178,8 @@ fun ChordIdentificationText(
 
         Text(
             currentNoteNames.joinToString("  "),
-            fontSize = 20.sp,
-            modifier = Modifier
+            fontSize = 16.sp,
+            modifier = Modifier.widthIn(150.dp)
         )
 
         Text(
@@ -201,5 +200,21 @@ fun ChordIdentificationText(
             fontSize = 20.sp,
             modifier = Modifier
         )
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        FilledTonalButton(
+            onClick = {
+                for ((stringIndex) in currentGuitar.fretMemory.withIndex()) {
+                    currentGuitar.fretMemory[stringIndex].x = currentGuitar.stringSpacing * stringIndex
+                    currentGuitar.fretMemory[stringIndex].y = 0f - currentGuitar.fretSpacing * 0.5f
+                    currentGuitar.fretMemory[stringIndex].fretSelected = 0
+                    currentGuitar.fretMemory[stringIndex].visible = false
+                }
+                currentPitches.clear()
+            }
+        ) {
+            Text("Clear Frets")
+        }
     }
 }
