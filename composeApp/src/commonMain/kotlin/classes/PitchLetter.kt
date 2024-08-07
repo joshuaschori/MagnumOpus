@@ -1,8 +1,7 @@
 package classes
 
-// TODO @Serializable
 class PitchLetter(val name: String) {
-    val letterValue: Int = when (name) {
+    private val letterValue: Int = when (name) {
         "C" -> 0
         "D" -> 1
         "E" -> 2
@@ -13,7 +12,7 @@ class PitchLetter(val name: String) {
         else -> 0
     }
 
-    fun letterAtValue(value: Int): String {
+    private fun letterAtValue(value: Int): String {
         return when (value) {
             0 -> "C"
             1 -> "D"

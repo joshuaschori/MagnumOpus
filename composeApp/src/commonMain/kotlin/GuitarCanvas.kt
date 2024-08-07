@@ -1,7 +1,7 @@
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -14,8 +14,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import classes.Guitar
 
-// TODO space for when more than six strings, less
-
 @Composable
 fun GuitarCanvas(
     navigationState: String,
@@ -24,9 +22,9 @@ fun GuitarCanvas(
     onGuitarChange: (Guitar) -> Unit
 ) {
     Canvas(modifier = Modifier
-        .fillMaxHeight()
-        .width((insetHorizontal * 2 + currentGuitar.stringSpacing * 5).dp)
-        .padding(bottom = innerPadding.calculateBottomPadding())
+        .height((insetVertical * 4 + currentGuitar.fretSpacing * settings.getInt("number of frets", 12)).dp)
+        .width((insetHorizontal * 2 + currentGuitar.stringSpacing * ( settings.getInt("number of strings", 6) - 1)).dp)
+        .padding(top = insetVertical.dp, bottom = innerPadding.calculateBottomPadding())
         .pointerInput(Unit) {
             detectTapGestures(
                 // update fretMemory if the coordinates of a fret are clicked
@@ -108,9 +106,9 @@ fun GuitarCanvas(
             }
 
             // create fret markers
-            repeat(currentGuitar.numberOfFrets + 1) { fretIndex ->
-                // make fret markers centered if the number of strings is even
-                if (currentGuitar.numberOfStrings % 2 == 0) {
+            repeat(currentGuitar.numberOfFrets) { fretIndex ->
+                // make fret markers centered if the number of strings is even and less than 8 strings
+                if (currentGuitar.numberOfStrings % 2 == 0 && currentGuitar.numberOfStrings < 8) {
                     // draw the fret markers that have a single circle
                     if (
                         fretIndex + 1 in currentGuitar.fretMarkers &&
@@ -146,8 +144,8 @@ fun GuitarCanvas(
                         )
                     }
                 }
-                // make markers offset if the number of strings is odd, so that it doesn't overlap a string
-                else if (currentGuitar.numberOfStrings % 2 != 0) {
+                // make markers offset if the number of strings is odd, so that it doesn't overlap a string, or greater than 6
+                else if (currentGuitar.numberOfStrings % 2 != 0 || currentGuitar.numberOfStrings > 6) {
                     // draw the fret markers that have a single circle
                     if (
                         fretIndex + 1 in currentGuitar.fretMarkers &&

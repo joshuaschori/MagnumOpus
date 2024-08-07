@@ -3,19 +3,17 @@ package classes
 import androidx.compose.ui.graphics.Color
 import settings
 
-// TODO @Serializable
 data class Guitar(
-    // TODO convert mutable lists to regular lists
     var fretMemory: MutableList<FretMemory> = mutableListOf(),
     val isDefaultGuitar: Boolean = false
 ) {
-    val numberOfFrets: Int = 12
+    val numberOfFrets: Int = settings.getInt("number of frets", 12)
     val numberOfStrings: Int = settings.getInt("number of strings", 6)
     val strings: MutableList<GuitarString> = mutableListOf()
     val lineColor: Color = Color.Black
     val lineThickness: Float = 1f
     val fretThickness: Float = 1f
-    val fretboardLength: Float = 500f
+    val fretboardLength: Float = 500f * (numberOfFrets / 12)
     val stringSpacing: Float = 30f
     val fretSpacing: Float = fretboardLength / numberOfFrets
     val fretMarkers: List<Int> = listOf(3,5,7,9,12,15,17,19,21,24)

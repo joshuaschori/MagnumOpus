@@ -1,4 +1,6 @@
-package classes// TODO create chord tests
+package classes
+
+// TODO create chord tests
 // food for thought, when adding score based on intervals:
 // when considering an extended chord with a missing 5th (C E X Bb D F A)
 // vs the same pitch classes spelled without any missing 5th (Bb D F A C E),
@@ -32,7 +34,6 @@ package classes// TODO create chord tests
 // TODO move chosenReading idea into a pitchInterpretations variable in chord that keeps track of the root,
 // TODO and possible natural, sharp, flat interpretations, like a toggle or something
 
-// TODO @Serializable
 class ChordInterpretation(
     val root: Pitch,
     val bassNote: Pitch,

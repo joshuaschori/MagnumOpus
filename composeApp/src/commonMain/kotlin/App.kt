@@ -1,32 +1,12 @@
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Dehaze
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.lightColors
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -37,28 +17,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.inset
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.BaselineShift
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import classes.Chord
-import classes.Guitar
-import classes.Pitch
 import com.example.compose.AppTheme
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.Settings
-import com.russhwolf.settings.get
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 
@@ -69,9 +31,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
     TODO touch listener, touch event, modifier touch listener compose
     TODO parity between x / y fret and string spacing
     TODO GIT github
-    TODO mutablestatelistof? deal with recomposition and fret memory
+    TODO mutableStateListOf? deal with recomposition and fret memory
     TODO ViewModel
-    TODO room and shared preferences for android, sql delite for multiplatform, ORM, wrappers
+    TODO room and shared preferences for android, sql deLite for multiplatform, ORM, wrappers
     TODO classes.FretMemory can calculate x and y?
     TODO horizontal or vertical alignment? horizontal better for reading guitar
     TODO capo ! !!!
@@ -92,8 +54,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
     // println(currentNumberOfStrings)
 */
 
-const val insetHorizontal = 50f
-const val insetVertical = 50f
+const val insetHorizontal = 30f
+const val insetVertical = 30f
 val settings: Settings = Settings()
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSerializationApi::class,
@@ -200,7 +162,7 @@ fun App() {
                         },
                         title = {
                             Text(navigationState)
-                        }
+                        },
                     )
                 },
 

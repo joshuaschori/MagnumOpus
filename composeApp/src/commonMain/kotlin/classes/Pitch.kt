@@ -2,7 +2,6 @@ package classes
 
 import kotlin.math.floor
 
-// TODO @Serializable
 data class Pitch(val midiValue: Int) {
     val octave: Int = floor((midiValue / 12).toFloat()).toInt() + 1
     val chromaticValue: Int = midiValue % 12

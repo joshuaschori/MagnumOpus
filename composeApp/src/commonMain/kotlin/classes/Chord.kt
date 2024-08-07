@@ -1,7 +1,6 @@
 package classes
 
-// TODO @Serializable
-class Chord(val pitches: MutableList<Pitch>) {
+class Chord(pitches: MutableList<Pitch>) {
     val chordInterpretationsList: MutableList<ChordInterpretation> = mutableListOf()
     var chosenInterpretationIndex: Int = 0
     var chosenChordName: String = ""
@@ -29,8 +28,8 @@ class Chord(val pitches: MutableList<Pitch>) {
         }
 
         // determine chord spelling, which is the chord interpretation with highest relevancy score
-        var tempScore: Float = 0f
-        var tempIndex: Int = 0
+        var tempScore = 0f
+        var tempIndex = 0
 
         for ((index, chord) in chordInterpretationsList.withIndex()) {
             if (chord.relevancyScore > tempScore) {

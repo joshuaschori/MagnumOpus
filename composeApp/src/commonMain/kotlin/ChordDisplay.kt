@@ -18,7 +18,6 @@ fun ChordDisplay(navigationState: String, innerPadding: PaddingValues) {
             .padding(paddingValues = innerPadding)
     ) {
 
-        // TODO multiple guitars / guitar options in settings
         var currentGuitar: Guitar by remember { mutableStateOf(Guitar(isDefaultGuitar = true)) }
 
         GuitarCanvas(
