@@ -45,3 +45,7 @@ class Chord(pitches: MutableList<Pitch>) {
 
     }
 }
+
+fun Chord.fullChordName(): String {
+    return this.chosenChordName + this.chosenChordExtensionsPrefix + this.chosenChordExtensions
+}

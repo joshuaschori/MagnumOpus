@@ -1,3 +1,4 @@
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,22 +13,50 @@ import classes.Guitar
 
 @Composable
 fun ChordDisplay(navigationState: String, innerPadding: PaddingValues) {
-    Row(
+    var currentGuitar: Guitar by remember { mutableStateOf(Guitar(isDefaultGuitar = true)) }
+
+    Column(
         modifier = Modifier
             .fillMaxHeight()
             .padding(paddingValues = innerPadding)
     ) {
+        if (settings.getInt("number of strings", 6) <= 6) {
 
-        var currentGuitar: Guitar by remember { mutableStateOf(Guitar(isDefaultGuitar = true)) }
+            Row(
+                modifier = Modifier
+                    .fillMaxHeight()
+            ) {
+                GuitarCanvas(
+                    navigationState = navigationState,
+                    innerPadding = innerPadding,
+                    currentGuitar = currentGuitar,
+                    onGuitarChange = {
+                        currentGuitar = it
+                    }
+                )
 
-        GuitarCanvas(
-            navigationState = navigationState,
-            innerPadding = innerPadding,
-            currentGuitar = currentGuitar,
-            onGuitarChange = {
-                currentGuitar = it
+
+
             }
-        )
 
+        }
+
+        else {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+            ) {
+                GuitarCanvas(
+                    navigationState = navigationState,
+                    innerPadding = innerPadding,
+                    currentGuitar = currentGuitar,
+                    onGuitarChange = {
+                        currentGuitar = it
+                    }
+                )
+            }
+
+        }
     }
 }

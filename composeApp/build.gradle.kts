@@ -72,6 +72,9 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(projects.shared)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
         }
