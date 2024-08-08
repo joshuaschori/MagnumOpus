@@ -34,16 +34,16 @@ class ChordTest {
     }
 
     @Test
-    fun cMajorAdd13() {
-        val cMajorAdd13 = Chord(
+    fun cMajorAdd9() {
+        val cMajorAdd9 = Chord(
             pitches = mutableListOf(
                 Pitch(0),
+                Pitch(2),
                 Pitch(4),
-                Pitch(7),
             )
         )
         assertEquals(
-            "Cadd113", cMajorAdd13.fullChordName()
+            "Cadd9", cMajorAdd9.fullChordName()
         )
     }
 
