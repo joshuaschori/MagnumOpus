@@ -273,6 +273,8 @@ fun Settings(innerPadding: PaddingValues) {
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                     scrollState = scrollState,
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.primaryContainer)
                 ) {
 
                     val listOfPitches: List<Int> = (0..127).map {
@@ -311,12 +313,10 @@ fun Settings(innerPadding: PaddingValues) {
                                     )
                                 },
                                 modifier = if (itemPitch.midiValue == settings.getInt("clickedStringPitch", -1)) {
-                                    Modifier
-                                        .background(MaterialTheme.colorScheme.tertiaryContainer)
+                                    Modifier.background(MaterialTheme.colorScheme.tertiaryContainer)
                                 }
                                 else {
                                     Modifier
-                                        .background(MaterialTheme.colorScheme.primaryContainer)
                                 }
                             )
                         }
@@ -390,7 +390,7 @@ fun Settings(innerPadding: PaddingValues) {
                         )
                         Text(
                             text = text,
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .padding(start = 10.dp)
                         )

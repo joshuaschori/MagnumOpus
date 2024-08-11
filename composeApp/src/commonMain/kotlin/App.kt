@@ -1,5 +1,3 @@
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,17 +23,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.compose.AppTheme
+import ui.theme.AppTheme
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 
 /*
-    TODO make the drawer push content right
-    TODO decide whether gesture will open drawer? where on screen?
     TODO try emulating on iphone?
-    TODO touch listener, touch event, modifier touch listener compose
     TODO parity between x / y fret and string spacing
     TODO GIT github
     TODO mutableStateListOf? deal with recomposition and fret memory
@@ -43,7 +38,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
     TODO room and shared preferences for android, sql deLite for multiplatform, ORM, wrappers
     TODO classes.FretMemory can calculate x and y?
     TODO horizontal or vertical alignment? horizontal better for reading guitar
-    TODO capo ! !!!
     TODO separate fret memory from currentGuitar, most of currentGuitar can be global settings, each page has fretMemory
     TODO add lower string or higher string, to retain other note tunings
     TODO select from named common tunings

@@ -64,4 +64,21 @@ class ChordTest {
 
     }
 
+    @Test
+    fun chord_A_D_Fsharp_A_Csharp() {
+        val chord = Chord(
+            pitches = mutableListOf(
+                Pitch(21),
+                Pitch(26),
+                Pitch(30),
+                Pitch(33),
+                Pitch(37),
+            )
+        )
+        assertEquals(
+            "Dmaj7", chord.fullChordName()
+        )
+
+    }
+
 }

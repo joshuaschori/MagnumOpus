@@ -18,29 +18,9 @@ fun Home(navigationState: String, innerPadding: PaddingValues) {
             .fillMaxHeight()
             .padding(paddingValues = innerPadding)
     ) {
-        repeat(6) {
-            Row() {
-                ElevatedButton(
-                    onClick = {
 
-                    }
-                ) {
-                    Icon(
-                        Icons.Outlined.Add,
-                        contentDescription = "Add String",
-                    )
-                }
-                ElevatedButton(
-                    onClick = {
 
-                    }
-                ) {
-                    Icon(
-                        Icons.Outlined.Remove,
-                        contentDescription = "Remove String"
-                    )
-                }
-            }
-        }
+
+
     }
 }

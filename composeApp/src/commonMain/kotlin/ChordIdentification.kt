@@ -4,11 +4,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.Text
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -166,7 +168,9 @@ fun ChordIdentificationText(
         Text(
             currentTuningNoteNames.joinToString("  "),
             fontSize = 16.sp,
-            modifier = Modifier.widthIn(150.dp)
+            modifier = Modifier
+                .widthIn(150.dp)
+                .heightIn(40.dp)
         )
 
         Text(
@@ -176,11 +180,25 @@ fun ChordIdentificationText(
                 .padding(top = insetVertical.dp)
         )
 
-        Text(
-            currentNoteNames.joinToString("  "),
-            fontSize = 16.sp,
-            modifier = Modifier.widthIn(150.dp)
-        )
+        if (currentPitches.size == 0) {
+            Text(
+                "Select on Fretboard",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier
+                    .widthIn(150.dp)
+                    .heightIn(40.dp)
+            )
+        }
+        else {
+            Text(
+                currentNoteNames.joinToString("  "),
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .widthIn(150.dp)
+                    .heightIn(40.dp)
+            )
+        }
 
         Text(
             "Chord:",
@@ -189,17 +207,27 @@ fun ChordIdentificationText(
                 .padding(top = insetVertical.dp)
         )
 
-        Text(
-            buildAnnotatedString {
-                append(currentChordName)
-                withStyle(superscript) {
-                    append(currentChordExtensionsPrefix)
-                    append(currentChordExtensions)
-                }
-            },
-            fontSize = 20.sp,
-            modifier = Modifier
-        )
+        if (currentPitches.size < 2) {
+            Text(
+                "Select Notes",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.heightIn(40.dp)
+            )
+        }
+        else {
+            Text(
+                buildAnnotatedString {
+                    append(currentChordName)
+                    withStyle(superscript) {
+                        append(currentChordExtensionsPrefix)
+                        append(currentChordExtensions)
+                    }
+                },
+                fontSize = 20.sp,
+                modifier = Modifier.heightIn(40.dp)
+            )
+        }
 
         Spacer(modifier = Modifier.height(30.dp))
 
