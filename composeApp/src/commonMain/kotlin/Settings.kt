@@ -1,4 +1,5 @@
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -34,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,10 +56,10 @@ fun Settings(innerPadding: PaddingValues) {
         val lazyListState = rememberLazyListState()
         val stringMidiValues: MutableList<Int> = mutableStateListOf()
 
-        var sliderPosition by remember { mutableFloatStateOf(settings.getInt("number of frets", 12).toFloat()) }
+        var sliderPosition by remember { mutableFloatStateOf(settings.getInt("number of frets", 15).toFloat()) }
 
         val startScreenString: String = settings.getString("startScreen", "Home")
-        val radioOptions = listOf("Home", "Chord Display", "Chord Identification", "Settings")
+        val radioOptions = listOf("Home", "Interval Display", "Chord Identification", "Settings")
         val (selectedOption, onOptionSelected) = remember { mutableStateOf(startScreenString) }
 
         // if no tuning settings, populate with default tuning
@@ -274,7 +277,7 @@ fun Settings(innerPadding: PaddingValues) {
                     onDismissRequest = { expanded = false },
                     scrollState = scrollState,
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                 ) {
 
                     val listOfPitches: List<Int> = (0..127).map {
@@ -416,7 +419,7 @@ fun Settings(innerPadding: PaddingValues) {
                     settings.clear()
                     stringMidiValues.removeAll(stringMidiValues)
                     onOptionSelected("Home")
-                    sliderPosition = 12f
+                    sliderPosition = 15f
                 }
             ) {
                 Text("Restore Defaults")

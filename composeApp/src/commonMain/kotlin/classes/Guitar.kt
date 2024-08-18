@@ -7,7 +7,7 @@ data class Guitar(
     var fretMemory: MutableList<FretMemory> = mutableListOf(),
     val isDefaultGuitar: Boolean = false
 ) {
-    val numberOfFrets: Int = settings.getInt("number of frets", 12)
+    val numberOfFrets: Int = settings.getInt("number of frets", 15)
     val numberOfStrings: Int = settings.getInt("number of strings", 6)
     val strings: MutableList<GuitarString> = mutableListOf()
     val lineColor: Color = Color.Black
@@ -27,6 +27,7 @@ data class Guitar(
         (0f - fretSpacing * 0.5f) + (fretSpacing * it)
     }
     val fretSelectionRadius = 14f
+    var chordMemory: ChordMemory = ChordMemory()
 
     init {
         // get the tuning of each string from settings

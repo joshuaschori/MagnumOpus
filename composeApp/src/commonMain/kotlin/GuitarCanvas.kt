@@ -7,11 +7,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import classes.Guitar
 
 @Composable
@@ -21,9 +26,12 @@ fun GuitarCanvas(
     currentGuitar: Guitar,
     onGuitarChange: (Guitar) -> Unit
 ) {
+    val textMeasurer = rememberTextMeasurer()
+
     Canvas(modifier = Modifier
-        .height((insetVertical * 4 + currentGuitar.fretSpacing * settings.getInt("number of frets", 12)).dp)
-        .width((insetHorizontal * 2 + currentGuitar.stringSpacing * ( settings.getInt("number of strings", 6) - 1)).dp)
+        // TODO insetHorizontal * 2.4 is an arbitrary fix, so note names with accidental don't overflow
+        .height((insetVertical * 4 + currentGuitar.fretSpacing * settings.getInt("number of frets", 15)).dp)
+        .width((insetHorizontal * 2.4 + currentGuitar.stringSpacing * ( settings.getInt("number of strings", 6) - 1)).dp)
         .padding(top = insetVertical.dp, bottom = innerPadding.calculateBottomPadding())
         .pointerInput(Unit) {
             detectTapGestures(
@@ -69,7 +77,6 @@ fun GuitarCanvas(
             )
         }
     ) {
-
         inset(horizontal = insetHorizontal.dp.toPx(), vertical = insetVertical.dp.toPx()) {
             // draw the guitar strings
             repeat(currentGuitar.numberOfStrings) { stringIndex ->
@@ -182,41 +189,114 @@ fun GuitarCanvas(
                 }
             }
 
-            if (navigationState == "Chord Identification") {
-                repeat(currentGuitar.numberOfStrings) { stringIndex ->
-                    // create indications of fretted notes
-                    if (currentGuitar.fretMemory[stringIndex].visible) {
-                        drawCircle(
-                            currentGuitar.lineColor,
-                            radius = currentGuitar.frettedNoteSize.dp.toPx(),
-                            style = Stroke(width = currentGuitar.lineThickness.dp.toPx()),
-                            center = Offset(
-                                x = currentGuitar.fretMemory[stringIndex].x.dp.toPx(),
-                                y = currentGuitar.fretMemory[stringIndex].y.dp.toPx()
+            when (navigationState) {
+                "Chord Identification" -> {
+                    repeat(currentGuitar.numberOfStrings) { stringIndex ->
+                        // create indications of fretted notes
+                        if (currentGuitar.fretMemory[stringIndex].visible) {
+                            drawCircle(
+                                currentGuitar.lineColor,
+                                radius = currentGuitar.frettedNoteSize.dp.toPx(),
+                                style = Stroke(width = currentGuitar.lineThickness.dp.toPx()),
+                                center = Offset(
+                                    x = currentGuitar.fretMemory[stringIndex].x.dp.toPx(),
+                                    y = currentGuitar.fretMemory[stringIndex].y.dp.toPx()
+                                ),
                             )
-                        )
+                        }
+                        // create X shapes for strings that aren't being played
+                        else {
+                            val path = Path()
+                            path.moveTo(
+                                currentGuitar.fretMemory[stringIndex].x.dp.toPx() - currentGuitar.unfrettedSize.dp.toPx(),
+                                currentGuitar.fretMemory[stringIndex].y.dp.toPx() - currentGuitar.unfrettedSize.dp.toPx()
+                            )
+                            path.lineTo(
+                                currentGuitar.fretMemory[stringIndex].x.dp.toPx() + currentGuitar.unfrettedSize.dp.toPx(),
+                                currentGuitar.fretMemory[stringIndex].y.dp.toPx() + currentGuitar.unfrettedSize.dp.toPx()
+                            )
+                            path.moveTo(
+                                currentGuitar.fretMemory[stringIndex].x.dp.toPx() + currentGuitar.unfrettedSize.dp.toPx(),
+                                currentGuitar.fretMemory[stringIndex].y.dp.toPx() - currentGuitar.unfrettedSize.dp.toPx()
+                            )
+                            path.lineTo(
+                                currentGuitar.fretMemory[stringIndex].x.dp.toPx() - currentGuitar.unfrettedSize.dp.toPx(),
+                                currentGuitar.fretMemory[stringIndex].y.dp.toPx() + currentGuitar.unfrettedSize.dp.toPx()
+                            )
+                            path.close()
+                            drawPath(path, currentGuitar.lineColor, style = Stroke(width = currentGuitar.lineThickness.dp.toPx()))
+                        }
                     }
-                    // create X shapes for strings that aren't being played
-                    else {
-                        val path = Path()
-                        path.moveTo(
-                            currentGuitar.fretMemory[stringIndex].x.dp.toPx() - currentGuitar.unfrettedSize.dp.toPx(),
-                            currentGuitar.fretMemory[stringIndex].y.dp.toPx() - currentGuitar.unfrettedSize.dp.toPx()
-                        )
-                        path.lineTo(
-                            currentGuitar.fretMemory[stringIndex].x.dp.toPx() + currentGuitar.unfrettedSize.dp.toPx(),
-                            currentGuitar.fretMemory[stringIndex].y.dp.toPx() + currentGuitar.unfrettedSize.dp.toPx()
-                        )
-                        path.moveTo(
-                            currentGuitar.fretMemory[stringIndex].x.dp.toPx() + currentGuitar.unfrettedSize.dp.toPx(),
-                            currentGuitar.fretMemory[stringIndex].y.dp.toPx() - currentGuitar.unfrettedSize.dp.toPx()
-                        )
-                        path.lineTo(
-                            currentGuitar.fretMemory[stringIndex].x.dp.toPx() - currentGuitar.unfrettedSize.dp.toPx(),
-                            currentGuitar.fretMemory[stringIndex].y.dp.toPx() + currentGuitar.unfrettedSize.dp.toPx()
-                        )
-                        path.close()
-                        drawPath(path, currentGuitar.lineColor, style = Stroke(width = currentGuitar.lineThickness.dp.toPx()))
+                }
+                "Interval Display" -> {
+                    for ((stringIndex, stringLocation) in currentGuitar.stringLocations.withIndex()) {
+                        for ((fretIndex, fretLocation) in currentGuitar.fretLocations.withIndex()) {
+                            if ((currentGuitar.strings[stringIndex].tuning.midiValue + fretIndex) % 12 in currentGuitar.chordMemory.pitchClassIntValues) {
+                                val intervalColor0 = settings.getLong("intervalColor0", 0xffee1b24)
+                                val intervalColor1 = settings.getLong("intervalColor1", 0xfff15b22)
+                                val intervalColor2 = settings.getLong("intervalColor2", 0xfff68d1e)
+                                val intervalColor3 = settings.getLong("intervalColor3", 0xfffdb913)
+                                val intervalColor4 = settings.getLong("intervalColor4", 0xfffef100)
+                                val intervalColor5 = settings.getLong("intervalColor5", 0xffc9db2a)
+                                val intervalColor6 = settings.getLong("intervalColor6", 0xff3ab449)
+                                val intervalColor7 = settings.getLong("intervalColor7", 0xff00a89d)
+                                val intervalColor8 = settings.getLong("intervalColor8", 0xff0271bd)
+                                val intervalColor9 = settings.getLong("intervalColor9", 0xff524ea1)
+                                val intervalColor10 = settings.getLong("intervalColor10", 0xff672e91)
+                                val intervalColor11 = settings.getLong("intervalColor11", 0xffb72367)
+
+                                val intervalColor = when (
+                                    (currentGuitar.strings[stringIndex].tuning.midiValue + fretIndex
+                                        + 12 - (currentGuitar.chordMemory.root.midiValue % 12)) % 12
+                                ) {
+                                    0 -> Color(intervalColor0)
+                                    1 -> Color(intervalColor1)
+                                    2 -> Color(intervalColor2)
+                                    3 -> Color(intervalColor3)
+                                    4 -> Color(intervalColor4)
+                                    5 -> Color(intervalColor5)
+                                    6 -> Color(intervalColor6)
+                                    7 -> Color(intervalColor7)
+                                    8 -> Color(intervalColor8)
+                                    9 -> Color(intervalColor9)
+                                    10 -> Color(intervalColor10)
+                                    11 -> Color(intervalColor11)
+                                    else -> Color.Black
+                                }
+
+                                drawCircle(
+                                    intervalColor,
+                                    radius = currentGuitar.frettedNoteSize.dp.toPx(),
+                                    center = Offset(
+                                        x = stringLocation.dp.toPx(),
+                                        y = fretLocation.dp.toPx()
+                                    )
+                                )
+
+                                var textToDraw = ""
+
+                                val chordMemoryIndex = currentGuitar.chordMemory.pitchClassIntValues.indexOfFirst { it == (currentGuitar.strings[stringIndex].tuning.midiValue + fretIndex) % 12 } // -1 if not found
+                                if (chordMemoryIndex >= 0) {
+                                    textToDraw = currentGuitar.chordMemory.noteNames[chordMemoryIndex]
+                                }
+
+                                val style = TextStyle(
+                                    fontSize = 14.sp,
+                                    color = Color.Black,
+                                )
+                                val textLayoutResult = textMeasurer.measure(textToDraw, style)
+
+                                drawText(
+                                    textMeasurer = textMeasurer,
+                                    text = textToDraw,
+                                    style = style,
+                                    topLeft = Offset(
+                                        x = stringLocation.dp.toPx() - textLayoutResult.size.width / 2,
+                                        y = fretLocation.dp.toPx() - textLayoutResult.size.height / 2
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
             }

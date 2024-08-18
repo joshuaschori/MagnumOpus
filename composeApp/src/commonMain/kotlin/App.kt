@@ -91,10 +91,10 @@ fun App() {
                         }
                     )
                     NavigationDrawerItem(
-                        label = { Text(text = "Chord Display") },
+                        label = { Text(text = "Interval Display") },
                         selected = false,
                         onClick = {
-                            navigationState = "Chord Display"
+                            navigationState = "Interval Display"
                             coroutineScope.launch {
                                 drawerState.apply {
                                     if (isOpen) close()
@@ -134,15 +134,18 @@ fun App() {
                 topBar = {
                     // TODO finish top app bar
                     TopAppBar(
+
                         /*
 
                         actions = {
                             IconButton(onClick = { /* do something */ }) {
-                                Icon(Icons.Filled.MoreVert, contentDescription = "Localized description")
+                                Icon(Icons.Filled.MusicNote, contentDescription = "Localized description")
                             }
                         },
 
+
                          */
+
 
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -204,7 +207,7 @@ fun App() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     when (navigationState) {
-                        "Chord Display" -> ChordDisplay(navigationState = navigationState, innerPadding = innerPadding)
+                        "Interval Display" -> IntervalDisplay(navigationState = navigationState, innerPadding = innerPadding)
                         "Chord Identification" -> ChordIdentification(navigationState = navigationState, innerPadding = innerPadding)
                         "Home" -> Home(navigationState = navigationState, innerPadding = innerPadding)
                         "Settings" -> Settings(innerPadding = innerPadding)

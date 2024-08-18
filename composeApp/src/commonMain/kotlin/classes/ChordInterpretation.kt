@@ -168,7 +168,7 @@ class ChordInterpretation(
                         // unused possibility to leave out of 9 chords:
                         // (intervals[perfectFourth].inChord || intervals[majorSixth].inChord) &&
                         (intervals[MINOR_SECOND].inChord ||
-                                ( intervals[AUGMENTED_SECOND].inChord) && intervals[AUGMENTED_SECOND].letterInterval == SECOND)
+                                ( intervals[AUGMENTED_SECOND].inChord) && intervals[MAJOR_THIRD].inChord)
                         ) {
                         extensions = extensions + "♮9"
                     }

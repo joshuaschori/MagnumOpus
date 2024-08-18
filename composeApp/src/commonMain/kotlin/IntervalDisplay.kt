@@ -1,11 +1,11 @@
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -15,7 +15,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalButton
@@ -32,10 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.BaselineShift
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import classes.Chord
@@ -43,17 +43,8 @@ import classes.ChordInterpretation
 import classes.Guitar
 import classes.Pitch
 
-// TODO cascading choices other than alterations, 7th and extensions?, default to none? default to major?
-// TODO or all intervals?
-//  chord name
-//  interval names
-//  highlight note names on fretboard
-//  only make diminished 7th available on diminished quality chord
-//  triad or quality?
-//  one button for chord type?
-
 @Composable
-fun ChordDisplay(navigationState: String, innerPadding: PaddingValues) {
+fun IntervalDisplay(navigationState: String, innerPadding: PaddingValues) {
     var currentGuitar: Guitar by remember { mutableStateOf(Guitar(isDefaultGuitar = true)) }
 
     Column(
@@ -62,7 +53,6 @@ fun ChordDisplay(navigationState: String, innerPadding: PaddingValues) {
             .padding(paddingValues = innerPadding)
     ) {
         if (settings.getInt("number of strings", 6) <= 6) {
-
             Row(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -76,22 +66,18 @@ fun ChordDisplay(navigationState: String, innerPadding: PaddingValues) {
                     }
                 )
 
-                ChordDisplayText(
+                IntervalDisplayText(
                     currentGuitar = currentGuitar
                 )
-
             }
-
         }
-
         else {
-
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
             ) {
 
-                ChordDisplayText(
+                IntervalDisplayText(
                     currentGuitar = currentGuitar
                 )
 
@@ -110,7 +96,7 @@ fun ChordDisplay(navigationState: String, innerPadding: PaddingValues) {
 }
 
 @Composable
-fun ChordDisplayText(
+fun IntervalDisplayText(
     currentGuitar: Guitar
 ) {
 
@@ -157,7 +143,6 @@ fun ChordDisplayText(
     rootMenuItemsPitches[16].chosenReading = rootMenuItemsPitches[16].sharpReading
 
     var typeMenuExpanded by remember { mutableStateOf(false) }
-    var typeChosen by remember { mutableStateOf("") }
     val typeMenuItems = listOf(
         "Major",
         "Minor",
@@ -211,7 +196,9 @@ fun ChordDisplayText(
 
         Text(
             "Tuning:",
-            fontSize = 16.sp,
+            fontSize = 20.sp,
+            modifier = Modifier
+                .padding(top = insetVertical.dp)
         )
 
         Text(
@@ -222,13 +209,15 @@ fun ChordDisplayText(
                 .heightIn(40.dp)
         )
 
+        Spacer(modifier = Modifier.height(20.dp))
+
         Text(
-            "Chord Root: ",
-            fontSize = 16.sp,
+            "Root: ",
+            fontSize = 20.sp,
         )
 
         Box {
-            FilledTonalButton(
+            Button(
                 onClick = {
                     rootMenuExpanded = true
                 }
@@ -246,7 +235,7 @@ fun ChordDisplayText(
                 onDismissRequest = { rootMenuExpanded = false },
                 scrollState = scrollState,
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
             ) {
                 LazyColumn(
                     state = rootMenuLazyListState,
@@ -260,6 +249,7 @@ fun ChordDisplayText(
                                 onClick = {
                                     rootChosen = pitch
                                     rootMenuExpanded = false
+                                    onStateChange0(true)
                                 },
                                 text = { Text(pitch.chosenReading.name) },
                                 modifier = if (rootChosen.chosenReading.name == pitch.chosenReading.name) {
@@ -275,11 +265,12 @@ fun ChordDisplayText(
             }
         }
 
+
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            "Chord Type: ",
-            fontSize = 16.sp,
+            "Intervals: ",
+            fontSize = 20.sp,
         )
 
         Box {
@@ -288,13 +279,8 @@ fun ChordDisplayText(
                     typeMenuExpanded = true
                 }
             ) {
-                // TODO revert to "Select" if Interval checkboxes change the chord type
                 Text(
-                    if (typeChosen == "") {
-                        "Select"
-                    } else {
-                        typeChosen
-                    }
+                    "Add from Chord"
                 )
             }
             DropdownMenu(
@@ -302,7 +288,7 @@ fun ChordDisplayText(
                 onDismissRequest = { typeMenuExpanded = false },
                 scrollState = scrollState,
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
             ) {
                 LazyColumn(
                     state = typeMenuLazyListState,
@@ -314,8 +300,7 @@ fun ChordDisplayText(
                         item {
                             DropdownMenuItem(
                                 onClick = {
-                                    typeChosen = type
-                                    when (typeChosen) {
+                                    when (type) {
                                         "Major" -> run {
                                             onStateChange0(true)
                                             onStateChange1(false)
@@ -423,12 +408,7 @@ fun ChordDisplayText(
                                     }
                                     typeMenuExpanded = false
                                 },
-                                text = { Text(type) },
-                                modifier = if (typeChosen == type) {
-                                    Modifier.background(MaterialTheme.colorScheme.tertiaryContainer)
-                                } else {
-                                    Modifier
-                                }
+                                text = { Text(type) }
                             )
                         }
                     }
@@ -437,14 +417,20 @@ fun ChordDisplayText(
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(
-            "Intervals: ",
-            fontSize = 16.sp,
-        )
-
         // TODO refactor this after I learn about view models, state, destructuring
+
+        val intervalColor0 = settings.getLong("intervalColor0", 0xffee1b24)
+        val intervalColor1 = settings.getLong("intervalColor1", 0xfff15b22)
+        val intervalColor2 = settings.getLong("intervalColor2", 0xfff68d1e)
+        val intervalColor3 = settings.getLong("intervalColor3", 0xfffdb913)
+        val intervalColor4 = settings.getLong("intervalColor4", 0xfffef100)
+        val intervalColor5 = settings.getLong("intervalColor5", 0xffc9db2a)
+        val intervalColor6 = settings.getLong("intervalColor6", 0xff3ab449)
+        val intervalColor7 = settings.getLong("intervalColor7", 0xff00a89d)
+        val intervalColor8 = settings.getLong("intervalColor8", 0xff0271bd)
+        val intervalColor9 = settings.getLong("intervalColor9", 0xff524ea1)
+        val intervalColor10 = settings.getLong("intervalColor10", 0xff672e91)
+        val intervalColor11 = settings.getLong("intervalColor11", 0xffb72367)
 
         Row(
             modifier = Modifier
@@ -459,6 +445,20 @@ fun ChordDisplayText(
         ) {
             Checkbox(
                 checked = checkedState0,
+                colors = CheckboxColors(
+                    CheckboxDefaults.colors().checkedCheckmarkColor,
+                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                    Color(intervalColor0),
+                    CheckboxDefaults.colors().uncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledCheckedBoxColor,
+                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                    Color(intervalColor0),
+                    CheckboxDefaults.colors().uncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledBorderColor,
+                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                ),
                 modifier = Modifier.scale(0.9f),
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
@@ -482,6 +482,20 @@ fun ChordDisplayText(
         ) {
             Checkbox(
                 checked = checkedState1,
+                colors = CheckboxColors(
+                    CheckboxDefaults.colors().checkedCheckmarkColor,
+                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                    Color(intervalColor1),
+                    CheckboxDefaults.colors().uncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledCheckedBoxColor,
+                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                    Color(intervalColor1),
+                    CheckboxDefaults.colors().uncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledBorderColor,
+                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                ),
                 modifier = Modifier.scale(0.9f),
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
@@ -505,6 +519,20 @@ fun ChordDisplayText(
         ) {
             Checkbox(
                 checked = checkedState2,
+                colors = CheckboxColors(
+                    CheckboxDefaults.colors().checkedCheckmarkColor,
+                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                    Color(intervalColor2),
+                    CheckboxDefaults.colors().uncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledCheckedBoxColor,
+                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                    Color(intervalColor2),
+                    CheckboxDefaults.colors().uncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledBorderColor,
+                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                ),
                 modifier = Modifier.scale(0.9f),
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
@@ -528,6 +556,20 @@ fun ChordDisplayText(
         ) {
             Checkbox(
                 checked = checkedState3,
+                colors = CheckboxColors(
+                    CheckboxDefaults.colors().checkedCheckmarkColor,
+                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                    Color(intervalColor3),
+                    CheckboxDefaults.colors().uncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledCheckedBoxColor,
+                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                    Color(intervalColor3),
+                    CheckboxDefaults.colors().uncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledBorderColor,
+                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                ),
                 modifier = Modifier.scale(0.9f),
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
@@ -551,6 +593,20 @@ fun ChordDisplayText(
         ) {
             Checkbox(
                 checked = checkedState4,
+                colors = CheckboxColors(
+                    CheckboxDefaults.colors().checkedCheckmarkColor,
+                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                    Color(intervalColor4),
+                    CheckboxDefaults.colors().uncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledCheckedBoxColor,
+                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                    Color(intervalColor4),
+                    CheckboxDefaults.colors().uncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledBorderColor,
+                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                ),
                 modifier = Modifier.scale(0.9f),
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
@@ -574,6 +630,20 @@ fun ChordDisplayText(
         ) {
             Checkbox(
                 checked = checkedState5,
+                colors = CheckboxColors(
+                    CheckboxDefaults.colors().checkedCheckmarkColor,
+                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                    Color(intervalColor5),
+                    CheckboxDefaults.colors().uncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledCheckedBoxColor,
+                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                    Color(intervalColor5),
+                    CheckboxDefaults.colors().uncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledBorderColor,
+                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                ),
                 modifier = Modifier.scale(0.9f),
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
@@ -597,6 +667,20 @@ fun ChordDisplayText(
         ) {
             Checkbox(
                 checked = checkedState6,
+                colors = CheckboxColors(
+                    CheckboxDefaults.colors().checkedCheckmarkColor,
+                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                    Color(intervalColor6),
+                    CheckboxDefaults.colors().uncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledCheckedBoxColor,
+                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                    Color(intervalColor6),
+                    CheckboxDefaults.colors().uncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledBorderColor,
+                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                ),
                 modifier = Modifier.scale(0.9f),
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
@@ -620,6 +704,20 @@ fun ChordDisplayText(
         ) {
             Checkbox(
                 checked = checkedState7,
+                colors = CheckboxColors(
+                    CheckboxDefaults.colors().checkedCheckmarkColor,
+                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                    Color(intervalColor7),
+                    CheckboxDefaults.colors().uncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledCheckedBoxColor,
+                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                    Color(intervalColor7),
+                    CheckboxDefaults.colors().uncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledBorderColor,
+                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                ),
                 modifier = Modifier.scale(0.9f),
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
@@ -643,6 +741,20 @@ fun ChordDisplayText(
         ) {
             Checkbox(
                 checked = checkedState8,
+                colors = CheckboxColors(
+                    CheckboxDefaults.colors().checkedCheckmarkColor,
+                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                    Color(intervalColor8),
+                    CheckboxDefaults.colors().uncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledCheckedBoxColor,
+                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                    Color(intervalColor8),
+                    CheckboxDefaults.colors().uncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledBorderColor,
+                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                ),
                 modifier = Modifier.scale(0.9f),
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
@@ -666,6 +778,20 @@ fun ChordDisplayText(
         ) {
             Checkbox(
                 checked = checkedState9,
+                colors = CheckboxColors(
+                    CheckboxDefaults.colors().checkedCheckmarkColor,
+                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                    Color(intervalColor9),
+                    CheckboxDefaults.colors().uncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledCheckedBoxColor,
+                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                    Color(intervalColor9),
+                    CheckboxDefaults.colors().uncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledBorderColor,
+                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                ),
                 modifier = Modifier.scale(0.9f),
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
@@ -689,6 +815,20 @@ fun ChordDisplayText(
         ) {
             Checkbox(
                 checked = checkedState10,
+                colors = CheckboxColors(
+                    CheckboxDefaults.colors().checkedCheckmarkColor,
+                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                    Color(intervalColor10),
+                    CheckboxDefaults.colors().uncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledCheckedBoxColor,
+                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                    Color(intervalColor10),
+                    CheckboxDefaults.colors().uncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledBorderColor,
+                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                ),
                 modifier = Modifier.scale(0.9f),
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
@@ -712,6 +852,20 @@ fun ChordDisplayText(
         ) {
             Checkbox(
                 checked = checkedState11,
+                colors = CheckboxColors(
+                    CheckboxDefaults.colors().checkedCheckmarkColor,
+                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                    Color(intervalColor11),
+                    CheckboxDefaults.colors().uncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledCheckedBoxColor,
+                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                    Color(intervalColor11),
+                    CheckboxDefaults.colors().uncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledBorderColor,
+                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                ),
                 modifier = Modifier.scale(0.9f),
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
@@ -722,92 +876,45 @@ fun ChordDisplayText(
             )
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        val currentPitches: MutableList<Pitch> = mutableListOf()
 
-        Text(
-            "Name: ",
-            fontSize = 16.sp,
+        val checkedStates = listOf(
+            checkedState0, checkedState1, checkedState2, checkedState3, checkedState4,
+            checkedState5, checkedState6, checkedState7, checkedState8, checkedState9,
+            checkedState10, checkedState11
         )
 
-        val currentPitches: MutableList<Pitch> = mutableStateListOf()
-
-        for (pitch in currentTuningInterpretation.chosenPitches) {
-
-            if (pitch.hasNatural) {
-                currentTuningNoteNames.add(
-                    pitch.naturalReading.name
-                )
+        if (rootChosen.midiValue != -1) {
+            currentGuitar.chordMemory.root = rootChosen
+            for ((index, state) in checkedStates.withIndex()) {
+                if (state) {
+                    currentPitches.add(Pitch(rootChosen.midiValue + index))
+                }
             }
-            else {
-                currentTuningNoteNames.add(
-                    pitch.chosenReading.name
-                )
-            }
-
         }
-
-        val currentNoteNames: MutableList<String> = mutableStateListOf()
-        var currentChordName = ""
-        var currentChordExtensionsPrefix = ""
-        var currentChordExtensions = ""
 
         if (currentPitches.size > 0) {
+
             val currentChord = Chord(currentPitches)
-            currentChordName = currentChord.chosenChordName
-            currentChordExtensionsPrefix = currentChord.chosenChordExtensionsPrefix
-            currentChordExtensions = currentChord.chosenChordExtensions
+
+            currentGuitar.chordMemory.pitchClassIntValues.clear()
+            currentGuitar.chordMemory.noteNames.clear()
 
             for (pitch in currentChord.chordInterpretationsList[currentChord.chosenInterpretationIndex].chosenPitches) {
-                currentNoteNames.add(
-                    pitch.chosenReading.name
-                )
+                currentGuitar.chordMemory.pitchClassIntValues.add(pitch.midiValue % 12)
+                currentGuitar.chordMemory.noteNames.add(pitch.chosenReading.name)
             }
         }
 
-        if (currentPitches.size < 2) {
-            currentChordName = ""
-        }
-
-        val superscript = SpanStyle(
-            baselineShift = BaselineShift.Superscript,
-            fontSize = 12.sp,
-            color = Color.Black
-        )
-
-        if (currentPitches.size < 2) {
-            androidx.compose.material.Text(
-                "Select Chord Root",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.heightIn(20.dp)
-            )
-            androidx.compose.material.Text(
-                "Select Chord Type",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.heightIn(20.dp)
-            )
-        }
-        else {
-            androidx.compose.material.Text(
-                buildAnnotatedString {
-                    append(currentChordName)
-                    withStyle(superscript) {
-                        append(currentChordExtensionsPrefix)
-                        append(currentChordExtensions)
-                    }
-                },
-                fontSize = 20.sp,
-                modifier = Modifier.heightIn(40.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         FilledTonalButton(
             onClick = {
                 rootChosen = Pitch(-1)
-                typeChosen = ""
+                currentPitches.clear()
+                currentGuitar.chordMemory.root = Pitch(-1)
+                currentGuitar.chordMemory.noteNames.clear()
+                currentGuitar.chordMemory.pitchClassIntValues.clear()
                 onStateChange0(false)
                 onStateChange1(false)
                 onStateChange2(false)
@@ -822,7 +929,7 @@ fun ChordDisplayText(
                 onStateChange11(false)
             }
         ) {
-            Text("Clear Chord")
+            Text("Clear Intervals")
         }
     }
 }
