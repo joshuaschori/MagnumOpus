@@ -37,7 +37,8 @@ package classes
 class ChordInterpretation(
     val root: Pitch,
     val bassNote: Pitch,
-    val pitches: List<Pitch>
+    val pitches: List<Pitch>,
+    val rootAlreadyHasReading: String = ""
 ) {
     companion object {
         // constants for relevancy score
@@ -600,7 +601,21 @@ class ChordInterpretation(
                 }
             }
 
-            if (numberOfFlats < numberOfSharps) {
+            if (rootAlreadyHasReading != "") {
+                if (rootAlreadyHasReading == "sharp") {
+                    chosenRoot = sharpRoot
+                    for ((index, pitch) in chosenPitches.withIndex()) {
+                        pitch.chosenReading = sharpPitches[index].chosenReading
+                    }
+                }
+                else if (rootAlreadyHasReading == "flat") {
+                    chosenRoot = flatRoot
+                    for ((index, pitch) in chosenPitches.withIndex()) {
+                        pitch.chosenReading = flatPitches[index].chosenReading
+                    }
+                }
+            }
+            else if (numberOfFlats < numberOfSharps) {
                 chosenRoot = flatRoot
                 for ((index, pitch) in chosenPitches.withIndex()) {
                     pitch.chosenReading = flatPitches[index].chosenReading

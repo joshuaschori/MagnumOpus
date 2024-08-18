@@ -50,7 +50,7 @@ data class Pitch(val midiValue: Int) {
         11 -> PitchSpelling(11, PitchLetter("A"), Accidental("doublesharp"))
         else -> PitchSpelling(0, PitchLetter("error"), Accidental("error"))
     }
-    var chosenReading: PitchSpelling = PitchSpelling(0, PitchLetter("none"), Accidental("none"))
+    var chosenReading: PitchSpelling = PitchSpelling(-1, PitchLetter("none"), Accidental("none"))
 
     fun intervalFrom(pitch: Pitch): Int {
         return (midiValue - pitch.midiValue).mod(12)

@@ -247,6 +247,10 @@ fun IntervalDisplayText(
                         item {
                             DropdownMenuItem(
                                 onClick = {
+                                    // TODO setting rootChosen to default value of -1 and then to the
+                                    //  proper pitch here is a work around. without this, it will not
+                                    //  recompose from enharmonic equivalents
+                                    rootChosen = Pitch(-1)
                                     rootChosen = pitch
                                     rootMenuExpanded = false
                                     onStateChange0(true)
@@ -833,7 +837,7 @@ fun IntervalDisplayText(
                 onCheckedChange = null // null recommended for accessibility with screenreaders
             )
             Text(
-                text = "♭7",
+                text = "♯6/♭7",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(start = 10.dp)
             )
@@ -895,12 +899,14 @@ fun IntervalDisplayText(
 
         if (currentPitches.size > 0) {
 
-            val currentChord = Chord(currentPitches)
+            //val currentChord = Chord(currentPitches)
+
+            val currentChordInterpretation = ChordInterpretation(rootChosen, rootChosen, currentPitches, rootAlreadyHasReading = rootChosen.chosenReading.accidental.type)
 
             currentGuitar.chordMemory.pitchClassIntValues.clear()
             currentGuitar.chordMemory.noteNames.clear()
 
-            for (pitch in currentChord.chordInterpretationsList[currentChord.chosenInterpretationIndex].chosenPitches) {
+            for (pitch in currentChordInterpretation.chosenPitches) {
                 currentGuitar.chordMemory.pitchClassIntValues.add(pitch.midiValue % 12)
                 currentGuitar.chordMemory.noteNames.add(pitch.chosenReading.name)
             }
