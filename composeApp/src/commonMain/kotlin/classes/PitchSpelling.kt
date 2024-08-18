@@ -65,9 +65,9 @@ class PitchSpelling(val chromaticValue: Int, val pitchLetter: PitchLetter, var a
                 }
                 8 -> {
                     when (pitchLetter.name) {
+                        "F" -> {deducedAccidental = "triplesharp"}
                         "G" -> {deducedAccidental = "sharp"}
                         "A" -> {deducedAccidental = "flat"}
-                        //"B" -> {deducedAccidental = "tripleflat"}
                     }
                 }
                 9 -> {

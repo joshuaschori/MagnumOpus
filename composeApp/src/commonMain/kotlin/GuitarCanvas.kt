@@ -29,9 +29,9 @@ fun GuitarCanvas(
     val textMeasurer = rememberTextMeasurer()
 
     Canvas(modifier = Modifier
-        // TODO insetHorizontal * 2.4 is an arbitrary fix, so note names with accidental don't overflow
+        // TODO insetHorizontal * 2.5 is an arbitrary fix, so note names with accidental don't overflow
         .height((insetVertical * 4 + currentGuitar.fretSpacing * settings.getInt("number of frets", 15)).dp)
-        .width((insetHorizontal * 2.4 + currentGuitar.stringSpacing * ( settings.getInt("number of strings", 6) - 1)).dp)
+        .width((insetHorizontal * 2.5 + currentGuitar.stringSpacing * ( settings.getInt("number of strings", 6) - 1)).dp)
         .padding(top = insetVertical.dp, bottom = innerPadding.calculateBottomPadding())
         .pointerInput(Unit) {
             detectTapGestures(
