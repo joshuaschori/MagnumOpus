@@ -6,6 +6,7 @@ class Chord(pitches: MutableList<Pitch>) {
     var chosenChordName: String = ""
     var chosenChordExtensionsPrefix: String = ""
     var chosenChordExtensions: String = ""
+    var sortedInterpretationList: List<ChordInterpretation> = listOf()
 
     init {
 
@@ -27,21 +28,8 @@ class Chord(pitches: MutableList<Pitch>) {
 
         }
 
-        // determine chord spelling, which is the chord interpretation with highest relevancy score
-        var tempScore = 0f
-        var tempIndex = 0
-
-        for ((index, chord) in chordInterpretationsList.withIndex()) {
-            if (chord.relevancyScore > tempScore) {
-                tempScore = chord.relevancyScore
-                tempIndex = index
-            }
-        }
-
-        chosenInterpretationIndex = tempIndex
-        chosenChordName = chordInterpretationsList[chosenInterpretationIndex].chordName
-        chosenChordExtensionsPrefix = chordInterpretationsList[chosenInterpretationIndex].extensionsPrefix
-        chosenChordExtensions = chordInterpretationsList[chosenInterpretationIndex].extensions.joinToString(",")
+        // sort chordInterpretationsList to determine ranking of chord readings by relevancy score
+        sortedInterpretationList = chordInterpretationsList.sortedByDescending { it.relevancyScore }
 
     }
 }

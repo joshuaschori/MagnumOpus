@@ -434,7 +434,7 @@ fun Settings(
                     stringMidiValues.removeAll(stringMidiValues)
                     onOptionSelected("Home")
                     sliderPosition = 15f
-                    val newGuitar: Guitar = Guitar(isDefaultGuitar = true)
+                    val newGuitar = Guitar(isDefaultGuitar = true)
                     onGuitarChange.invoke(newGuitar)
                 }
             ) {
