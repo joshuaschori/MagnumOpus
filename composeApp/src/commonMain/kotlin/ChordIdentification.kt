@@ -97,22 +97,11 @@ fun ChordIdentificationText(
     }
 
     val currentNoteNames: MutableList<String> = mutableStateListOf()
-
-    var currentChordName = ""
-    var currentChordExtensionsPrefix = ""
-    var currentChordExtensions = ""
-
+    var currentChord = Chord(mutableListOf(Pitch(0)))
     var selectedInterpretationIndex = 0
-    var listOfInterpretationsNames: MutableList<String> = mutableListOf()
-    var listOfInterpretationsExtensionsPrefixes: MutableList<String> = mutableListOf()
-    var listOfInterpretationsExtensions: MutableList<String> = mutableListOf()
 
     if (currentPitches.size > 0) {
-        val currentChord = Chord(currentPitches)
-
-        currentChordName = currentChord.sortedInterpretationList[selectedInterpretationIndex].chordName
-        currentChordExtensionsPrefix = currentChord.sortedInterpretationList[selectedInterpretationIndex].extensionsPrefix
-        currentChordExtensions = currentChord.sortedInterpretationList[selectedInterpretationIndex].extensions.joinToString(",")
+        currentChord = Chord(currentPitches)
 
         for (pitch in currentChord.sortedInterpretationList[selectedInterpretationIndex].chosenPitches) {
             currentNoteNames.add(
@@ -124,6 +113,12 @@ fun ChordIdentificationText(
     val superscript = SpanStyle(
         baselineShift = BaselineShift.Superscript,
         fontSize = 12.sp,
+        color = Color.Black
+    )
+
+    val superscriptSmall = SpanStyle(
+        baselineShift = BaselineShift.Superscript,
+        fontSize = 10.sp,
         color = Color.Black
     )
 
@@ -159,7 +154,7 @@ fun ChordIdentificationText(
         }
 
         Text(
-            "Chord\r\nInterpretation:",
+            "Chord:",
             fontSize = 20.sp,
             modifier = Modifier
                 .padding(top = insetVertical.dp)
@@ -178,10 +173,10 @@ fun ChordIdentificationText(
         else {
             Text(
                 buildAnnotatedString {
-                    append(currentChordName)
+                    append(currentChord.sortedInterpretationList[selectedInterpretationIndex].chordName)
                     withStyle(superscript) {
-                        append(currentChordExtensionsPrefix)
-                        append(currentChordExtensions)
+                        append(currentChord.sortedInterpretationList[selectedInterpretationIndex].extensionsPrefix)
+                        append(currentChord.sortedInterpretationList[selectedInterpretationIndex].extensions.joinToString(","))
                     }
                 },
                 fontSize = 18.sp,
@@ -189,14 +184,34 @@ fun ChordIdentificationText(
                     .heightIn(60.dp)
             )
             Text(
-                "Other\r\nPossible\r\nInterpretations:",
+                "Other Possible\r\nInterpretations:",
                 fontSize = 14.sp,
                 modifier = Modifier
                     .padding(start = insetHorizontal.dp)
-                    .heightIn(60.dp)
+                    .heightIn(40.dp)
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Spacer(modifier = Modifier.height(90.dp))
+            val listOfAlreadyDisplayedInterpretationRoots: MutableList<Int> = mutableListOf(
+                currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12
+            )
+            for ((index, interpretation) in currentChord.sortedInterpretationList.withIndex()) {
+                if (index != selectedInterpretationIndex && (interpretation.root.midiValue % 12) !in listOfAlreadyDisplayedInterpretationRoots) {
+                    listOfAlreadyDisplayedInterpretationRoots.add(interpretation.root.midiValue % 12)
+
+                    Text(
+                        buildAnnotatedString {
+                            append(interpretation.chordName)
+                            withStyle(superscriptSmall) {
+                                append(interpretation.extensionsPrefix)
+                                append(interpretation.extensions.joinToString(","))
+                            }
+                        },
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .padding(start = insetHorizontal.dp)
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(30.dp))
