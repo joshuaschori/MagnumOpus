@@ -102,7 +102,10 @@ fun IntervalDisplayText(
 ) {
     val scrollState = rememberScrollState()
     var rootMenuExpanded by remember { mutableStateOf(false) }
-    var rootChosen by remember { mutableStateOf(Pitch(-1)) }
+    //var rootChosen by remember { mutableStateOf(Pitch(-1)) }
+
+    var rootChosen by remember { mutableStateOf(currentGuitar.chordMemory.root) }
+
     val rootMenuLazyListState = rememberLazyListState()
     val rootMenuItemsPitches = listOf(
         Pitch(8),
@@ -153,18 +156,18 @@ fun IntervalDisplayText(
     )
     val typeMenuLazyListState = rememberLazyListState()
 
-    val (checkedState0, onStateChange0) = remember { mutableStateOf(false) }
-    val (checkedState1, onStateChange1) = remember { mutableStateOf(false) }
-    val (checkedState2, onStateChange2) = remember { mutableStateOf(false) }
-    val (checkedState3, onStateChange3) = remember { mutableStateOf(false) }
-    val (checkedState4, onStateChange4) = remember { mutableStateOf(false) }
-    val (checkedState5, onStateChange5) = remember { mutableStateOf(false) }
-    val (checkedState6, onStateChange6) = remember { mutableStateOf(false) }
-    val (checkedState7, onStateChange7) = remember { mutableStateOf(false) }
-    val (checkedState8, onStateChange8) = remember { mutableStateOf(false) }
-    val (checkedState9, onStateChange9) = remember { mutableStateOf(false) }
-    val (checkedState10, onStateChange10) = remember { mutableStateOf(false) }
-    val (checkedState11, onStateChange11) = remember { mutableStateOf(false) }
+    val (checkedState0, onStateChange0) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[0]) }
+    val (checkedState1, onStateChange1) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[1]) }
+    val (checkedState2, onStateChange2) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[2]) }
+    val (checkedState3, onStateChange3) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[3]) }
+    val (checkedState4, onStateChange4) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[4]) }
+    val (checkedState5, onStateChange5) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[5]) }
+    val (checkedState6, onStateChange6) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[6]) }
+    val (checkedState7, onStateChange7) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[7]) }
+    val (checkedState8, onStateChange8) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[8]) }
+    val (checkedState9, onStateChange9) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[9]) }
+    val (checkedState10, onStateChange10) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[10]) }
+    val (checkedState11, onStateChange11) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[11]) }
 
     val listOfCheckedStates = listOf(
         checkedState0, checkedState1, checkedState2, checkedState3, checkedState4,
@@ -263,6 +266,7 @@ fun IntervalDisplayText(
                                     rootChosen = pitch
                                     rootMenuExpanded = false
                                     onStateChange0(true)
+                                    currentGuitar.chordMemory.checkboxMemory[0] = true
                                 },
                                 text = { Text(pitch.chosenReading.name) },
                                 modifier = if (rootChosen.chosenReading.name == pitch.chosenReading.name) {
@@ -315,108 +319,66 @@ fun IntervalDisplayText(
                                 onClick = {
                                     when (type) {
                                         "Major" -> run {
-                                            onStateChange0(true)
-                                            onStateChange1(false)
-                                            onStateChange2(false)
-                                            onStateChange3(false)
-                                            onStateChange4(true)
-                                            onStateChange5(false)
-                                            onStateChange6(false)
-                                            onStateChange7(true)
-                                            onStateChange8(false)
-                                            onStateChange9(false)
-                                            onStateChange10(false)
-                                            onStateChange11(false)
+                                            for ((index, state) in listOfOnStateChanges.withIndex()) {
+                                                when (index) {
+                                                    0,4,7 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                }
+                                            }
                                         }
 
                                         "Minor" -> run {
-                                            onStateChange0(true)
-                                            onStateChange1(false)
-                                            onStateChange2(false)
-                                            onStateChange3(true)
-                                            onStateChange4(false)
-                                            onStateChange5(false)
-                                            onStateChange6(false)
-                                            onStateChange7(true)
-                                            onStateChange8(false)
-                                            onStateChange9(false)
-                                            onStateChange10(false)
-                                            onStateChange11(false)
+                                            for ((index, state) in listOfOnStateChanges.withIndex()) {
+                                                when (index) {
+                                                    0,3,7 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                }
+                                            }
                                         }
 
                                         "Diminished" -> run {
-                                            onStateChange0(true)
-                                            onStateChange1(false)
-                                            onStateChange2(false)
-                                            onStateChange3(true)
-                                            onStateChange4(false)
-                                            onStateChange5(false)
-                                            onStateChange6(true)
-                                            onStateChange7(false)
-                                            onStateChange8(false)
-                                            onStateChange9(false)
-                                            onStateChange10(false)
-                                            onStateChange11(false)
+                                            for ((index, state) in listOfOnStateChanges.withIndex()) {
+                                                when (index) {
+                                                    0,3,6 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                }
+                                            }
                                         }
 
                                         "Dominant" -> run {
-                                            onStateChange0(true)
-                                            onStateChange1(false)
-                                            onStateChange2(false)
-                                            onStateChange3(false)
-                                            onStateChange4(true)
-                                            onStateChange5(false)
-                                            onStateChange6(false)
-                                            onStateChange7(true)
-                                            onStateChange8(false)
-                                            onStateChange9(false)
-                                            onStateChange10(true)
-                                            onStateChange11(false)
+                                            for ((index, state) in listOfOnStateChanges.withIndex()) {
+                                                when (index) {
+                                                    0,4,7,10 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                }
+                                            }
                                         }
 
                                         "Augmented" -> run {
-                                            onStateChange0(true)
-                                            onStateChange1(false)
-                                            onStateChange2(false)
-                                            onStateChange3(false)
-                                            onStateChange4(true)
-                                            onStateChange5(false)
-                                            onStateChange6(false)
-                                            onStateChange7(false)
-                                            onStateChange8(true)
-                                            onStateChange9(false)
-                                            onStateChange10(false)
-                                            onStateChange11(false)
+                                            for ((index, state) in listOfOnStateChanges.withIndex()) {
+                                                when (index) {
+                                                    0,4,8 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                }
+                                            }
                                         }
 
                                         "Suspended 4th" -> run {
-                                            onStateChange0(true)
-                                            onStateChange1(false)
-                                            onStateChange2(false)
-                                            onStateChange3(false)
-                                            onStateChange4(false)
-                                            onStateChange5(true)
-                                            onStateChange6(false)
-                                            onStateChange7(true)
-                                            onStateChange8(false)
-                                            onStateChange9(false)
-                                            onStateChange10(false)
-                                            onStateChange11(false)
+                                            for ((index, state) in listOfOnStateChanges.withIndex()) {
+                                                when (index) {
+                                                    0,5,7 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                }
+                                            }
                                         }
 
                                         "Suspended 2nd" -> run {
-                                            onStateChange0(true)
-                                            onStateChange1(false)
-                                            onStateChange2(true)
-                                            onStateChange3(false)
-                                            onStateChange4(false)
-                                            onStateChange5(false)
-                                            onStateChange6(false)
-                                            onStateChange7(true)
-                                            onStateChange8(false)
-                                            onStateChange9(false)
-                                            onStateChange10(false)
-                                            onStateChange11(false)
+                                            for ((index, state) in listOfOnStateChanges.withIndex()) {
+                                                when (index) {
+                                                    0,2,7 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                }
+                                            }
                                         }
                                     }
                                     typeMenuExpanded = false
@@ -437,7 +399,10 @@ fun IntervalDisplayText(
                     .width(100.dp)
                     .toggleable(
                         value = listOfCheckedStates[index],
-                        onValueChange = { listOfOnStateChanges[index](!listOfCheckedStates[index]) },
+                        onValueChange = {
+                            listOfOnStateChanges[index](!listOfCheckedStates[index])
+                            currentGuitar.chordMemory.checkboxMemory[index] = !listOfCheckedStates[index]
+                        },
                         role = Role.Checkbox
                     ),
                 verticalAlignment = Alignment.CenterVertically
