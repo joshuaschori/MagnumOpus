@@ -41,7 +41,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import classes.Guitar
-import classes.GuitarString
 import classes.Pitch
 
 @Composable
@@ -135,7 +134,7 @@ fun Settings(
                     FilledTonalButton(
                         onClick = {
 
-                            if (numberOfStrings < 8) {
+                            if (numberOfStrings < currentGuitar.companion.MAX_NUMBER_OF_STRINGS) {
                                 repeat(numberOfStrings - it) { index ->
 
                                     val stringNumber = numberOfStrings + 1 - index
@@ -177,7 +176,7 @@ fun Settings(
                 repeat(numberOfStrings) {
                     FilledTonalButton(
                         onClick = {
-                            if (numberOfStrings > 4) {
+                            if (numberOfStrings > currentGuitar.companion.MIN_NUMBER_OF_STRINGS) {
                                 repeat(numberOfStrings - it - 1) { index ->
 
                                     val stringNumber = it + 1 + index

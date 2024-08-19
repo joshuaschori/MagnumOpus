@@ -7,6 +7,11 @@ data class Guitar(
     var fretMemory: MutableList<FretMemory> = mutableListOf(),
     val isDefaultGuitar: Boolean = false
 ) {
+    companion object {
+        const val MIN_NUMBER_OF_STRINGS = 4
+        const val MAX_NUMBER_OF_STRINGS = 8
+    }
+    val companion = Companion
     val numberOfFrets: Int = settings.getInt("number of frets", 15)
     val numberOfStrings: Int = settings.getInt("number of strings", 6)
     val strings: List<GuitarString> = (0..< numberOfStrings).map {
@@ -56,7 +61,7 @@ data class Guitar(
     init {
         // add default open string hidden values to fretMemory for each string
         if (isDefaultGuitar) {
-            repeat(numberOfStrings) {stringIndex ->
+            repeat(MAX_NUMBER_OF_STRINGS) { stringIndex ->
                 fretMemory.add(
                     FretMemory(
                         x = stringSpacing * stringIndex,

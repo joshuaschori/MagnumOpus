@@ -100,9 +100,7 @@ fun IntervalDisplay(
 fun IntervalDisplayText(
     currentGuitar: Guitar
 ) {
-
     val scrollState = rememberScrollState()
-
     var rootMenuExpanded by remember { mutableStateOf(false) }
     var rootChosen by remember { mutableStateOf(Pitch(-1)) }
     val rootMenuLazyListState = rememberLazyListState()
@@ -228,7 +226,7 @@ fun IntervalDisplayText(
         )
 
         Box {
-            Button(
+            FilledTonalButton(
                 onClick = {
                     rootMenuExpanded = true
                 }
@@ -431,6 +429,7 @@ fun IntervalDisplayText(
             }
         }
 
+        // create interval checkboxes
         for (index in 0..11) {
             Row(
                 modifier = Modifier
@@ -482,11 +481,12 @@ fun IntervalDisplayText(
         }
 
         if (currentPitches.size > 0) {
-
-            //val currentChord = Chord(currentPitches)
-
-            val currentChordInterpretation = ChordInterpretation(rootChosen, rootChosen, currentPitches, rootAlreadyHasReading = rootChosen.chosenReading.accidental.type)
-
+            val currentChordInterpretation = ChordInterpretation(
+                rootChosen,
+                rootChosen,
+                currentPitches,
+                rootAlreadyHasReading = rootChosen.chosenReading.accidental.type
+            )
             currentGuitar.chordMemory.pitchClassIntValues.clear()
             currentGuitar.chordMemory.noteNames.clear()
 
@@ -505,18 +505,9 @@ fun IntervalDisplayText(
                 currentGuitar.chordMemory.root = Pitch(-1)
                 currentGuitar.chordMemory.noteNames.clear()
                 currentGuitar.chordMemory.pitchClassIntValues.clear()
-                onStateChange0(false)
-                onStateChange1(false)
-                onStateChange2(false)
-                onStateChange3(false)
-                onStateChange4(false)
-                onStateChange5(false)
-                onStateChange6(false)
-                onStateChange7(false)
-                onStateChange8(false)
-                onStateChange9(false)
-                onStateChange10(false)
-                onStateChange11(false)
+                for (change in listOfOnStateChanges) {
+                    change(false)
+                }
             }
         ) {
             Text("Clear Intervals")
