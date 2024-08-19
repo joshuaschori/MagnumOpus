@@ -44,7 +44,9 @@ import classes.Guitar
 import classes.Pitch
 
 @Composable
-fun IntervalDisplay(navigationState: String, innerPadding: PaddingValues) {
+fun IntervalDisplay(
+    navigationState: String, innerPadding: PaddingValues
+) {
     var currentGuitar: Guitar by remember { mutableStateOf(Guitar(isDefaultGuitar = true)) }
 
     Column(
@@ -167,53 +169,15 @@ fun IntervalDisplayText(
     val (checkedState10, onStateChange10) = remember { mutableStateOf(false) }
     val (checkedState11, onStateChange11) = remember { mutableStateOf(false) }
 
-    // TODO repeated code with ChordIdentification
-    val currentTuning: MutableList<Pitch> = mutableStateListOf()
-    repeat(currentGuitar.numberOfStrings) {stringIndex ->
-        currentTuning.add(
-            Pitch(currentGuitar.strings[stringIndex].tuning.midiValue)
-        )
-    }
-    val currentTuningInterpretation = ChordInterpretation(currentTuning[0], currentTuning[0], currentTuning)
-    val currentTuningNoteNames: MutableList<String> = mutableStateListOf()
-    for (pitch in currentTuningInterpretation.chosenPitches) {
-        if (pitch.hasNatural) {
-            currentTuningNoteNames.add(
-                pitch.naturalReading.name
-            )
-        }
-        else {
-            currentTuningNoteNames.add(
-                pitch.chosenReading.name
-            )
-        }
-    }
-
     Column(
         modifier = Modifier
             .padding(top = insetVertical.dp)
     ) {
-
-        Text(
-            "Tuning:",
-            fontSize = 20.sp,
-            modifier = Modifier
-                .padding(top = insetVertical.dp)
-        )
-
-        Text(
-            currentTuningNoteNames.joinToString("  "),
-            fontSize = 16.sp,
-            modifier = Modifier
-                .widthIn(150.dp)
-                .heightIn(40.dp)
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
         Text(
             "Root: ",
             fontSize = 20.sp,
+            modifier = Modifier
+                .padding(top = insetVertical.dp)
         )
 
         Box {

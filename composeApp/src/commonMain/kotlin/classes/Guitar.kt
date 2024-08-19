@@ -9,7 +9,19 @@ data class Guitar(
 ) {
     val numberOfFrets: Int = settings.getInt("number of frets", 15)
     val numberOfStrings: Int = settings.getInt("number of strings", 6)
-    val strings: MutableList<GuitarString> = mutableListOf()
+    val strings: List<GuitarString> = (0..< numberOfStrings).map {
+        val stringIndex = numberOfStrings - it
+        val defaultValue = when (stringIndex) {
+            6 -> 16
+            5 -> 21
+            4 -> 26
+            3 -> 31
+            2 -> 35
+            1 -> 40
+            else -> 0
+        }
+        GuitarString(Pitch(settings.getInt("$stringIndex string tuning", defaultValue)))
+    }
     val lineColor: Color = Color.Black
     val lineThickness: Float = 1f
     val fretThickness: Float = 1f
@@ -28,23 +40,20 @@ data class Guitar(
     }
     val fretSelectionRadius = 14f
     var chordMemory: ChordMemory = ChordMemory()
+    private val currentTuning: List<Pitch> = (0..< numberOfStrings).map {
+        Pitch(strings[it].tuning.midiValue)
+    }
+    private val currentTuningInterpretation = ChordInterpretation(currentTuning[0], currentTuning[0], currentTuning)
+    val currentTuningNoteNames: List<String> = (0..< currentTuningInterpretation.chosenPitches.size).map {
+        if (currentTuningInterpretation.chosenPitches[it].hasNatural) {
+            currentTuningInterpretation.chosenPitches[it].naturalReading.name
+        }
+        else {
+            currentTuningInterpretation.chosenPitches[it].chosenReading.name
+        }
+    }
 
     init {
-        // get the tuning of each string from settings
-        repeat(numberOfStrings) {index ->
-            val stringIndex = numberOfStrings - index
-            val defaultValue = when (stringIndex) {
-                6 -> 16
-                5 -> 21
-                4 -> 26
-                3 -> 31
-                2 -> 35
-                1 -> 40
-                else -> 0
-            }
-            strings.add(GuitarString(Pitch(settings.getInt("$stringIndex string tuning", defaultValue))))
-        }
-
         // add default open string hidden values to fretMemory for each string
         if (isDefaultGuitar) {
             repeat(numberOfStrings) {stringIndex ->

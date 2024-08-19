@@ -40,10 +40,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import classes.Guitar
+import classes.GuitarString
 import classes.Pitch
 
 @Composable
-fun Settings(innerPadding: PaddingValues) {
+fun Settings(
+    innerPadding: PaddingValues,
+    currentGuitar: Guitar,
+    onGuitarChange: (Guitar) -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(paddingValues = innerPadding)
@@ -92,6 +98,9 @@ fun Settings(innerPadding: PaddingValues) {
             settings.putInt("$updateString string tuning", updateStringMidiValue)
             settings.putInt("updateString", 0)
             settings.putInt("updateStringMidiValue", 999)
+
+            val newGuitar: Guitar = currentGuitar.copy(fretMemory = currentGuitar.fretMemory.toMutableList())
+            onGuitarChange.invoke(newGuitar)
         }
 
         Row {
@@ -126,7 +135,7 @@ fun Settings(innerPadding: PaddingValues) {
                     FilledTonalButton(
                         onClick = {
 
-                            if (numberOfStrings < 12) {
+                            if (numberOfStrings < 8) {
                                 repeat(numberOfStrings - it) { index ->
 
                                     val stringNumber = numberOfStrings + 1 - index
@@ -138,6 +147,9 @@ fun Settings(innerPadding: PaddingValues) {
                                 settings.putInt("number of strings", settings.getInt("number of strings", 6) + 1)
 
                                 stringMidiValues.removeAll(stringMidiValues)
+
+                                val newGuitar: Guitar = currentGuitar.copy(fretMemory = currentGuitar.fretMemory.toMutableList())
+                                onGuitarChange.invoke(newGuitar)
                             }
 
                         },
@@ -178,6 +190,9 @@ fun Settings(innerPadding: PaddingValues) {
                                 settings.putInt("number of strings", settings.getInt("number of strings", 6) - 1)
 
                                 stringMidiValues.removeAll(stringMidiValues)
+
+                                val newGuitar: Guitar = currentGuitar.copy(fretMemory = currentGuitar.fretMemory.toMutableList())
+                                onGuitarChange.invoke(newGuitar)
                             }
                         },
                         modifier = Modifier
@@ -420,6 +435,8 @@ fun Settings(innerPadding: PaddingValues) {
                     stringMidiValues.removeAll(stringMidiValues)
                     onOptionSelected("Home")
                     sliderPosition = 15f
+                    val newGuitar: Guitar = currentGuitar.copy(fretMemory = currentGuitar.fretMemory.toMutableList())
+                    onGuitarChange.invoke(newGuitar)
                 }
             ) {
                 Text("Restore Defaults")

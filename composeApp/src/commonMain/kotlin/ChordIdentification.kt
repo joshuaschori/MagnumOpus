@@ -148,22 +148,6 @@ fun ChordIdentificationText(
         modifier = Modifier
             .padding(top = insetVertical.dp)
     ) {
-
-        Text(
-            "Tuning:",
-            fontSize = 20.sp,
-            modifier = Modifier
-                .padding(top = insetVertical.dp)
-        )
-
-        Text(
-            currentTuningNoteNames.joinToString("  "),
-            fontSize = 16.sp,
-            modifier = Modifier
-                .widthIn(150.dp)
-                .heightIn(40.dp)
-        )
-
         Text(
             "Notes:",
             fontSize = 20.sp,
