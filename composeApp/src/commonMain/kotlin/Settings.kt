@@ -177,7 +177,7 @@ fun Settings(
                 repeat(numberOfStrings) {
                     FilledTonalButton(
                         onClick = {
-                            if (numberOfStrings > 3) {
+                            if (numberOfStrings > 4) {
                                 repeat(numberOfStrings - it - 1) { index ->
 
                                     val stringNumber = it + 1 + index

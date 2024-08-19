@@ -234,9 +234,26 @@ fun App() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     when (navigationState) {
-                        "Interval Display" -> IntervalDisplay(navigationState = navigationState, innerPadding = innerPadding)
-                        "Chord Identification" -> ChordIdentification(navigationState = navigationState, innerPadding = innerPadding)
-                        "Home" -> Home(navigationState = navigationState, innerPadding = innerPadding)
+                        "Interval Display" -> IntervalDisplay(
+                            navigationState = navigationState,
+                            innerPadding = innerPadding,
+                            currentGuitar = currentGuitar,
+                            onGuitarChange = {
+                                currentGuitar = it
+                            }
+                        )
+                        "Chord Identification" -> ChordIdentification(
+                            navigationState = navigationState,
+                            innerPadding = innerPadding,
+                            currentGuitar = currentGuitar,
+                            onGuitarChange = {
+                                currentGuitar = it
+                            }
+                        )
+                        "Home" -> Home(
+                            navigationState = navigationState,
+                            innerPadding = innerPadding
+                        )
                         "Settings" -> Settings(
                             innerPadding = innerPadding,
                             currentGuitar = currentGuitar,

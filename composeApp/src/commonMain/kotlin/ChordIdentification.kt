@@ -31,9 +31,12 @@ import classes.Guitar
 import classes.Pitch
 
 @Composable
-fun ChordIdentification(navigationState: String, innerPadding: PaddingValues) {
-    var currentGuitar: Guitar by remember { mutableStateOf(Guitar(isDefaultGuitar = true)) }
-
+fun ChordIdentification(
+    navigationState: String,
+    innerPadding: PaddingValues,
+    currentGuitar: Guitar,
+    onGuitarChange: (Guitar) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -49,7 +52,8 @@ fun ChordIdentification(navigationState: String, innerPadding: PaddingValues) {
                     innerPadding = innerPadding,
                     currentGuitar = currentGuitar,
                     onGuitarChange = {
-                        currentGuitar = it
+                        val newGuitar: Guitar = currentGuitar.copy(fretMemory = currentGuitar.fretMemory.toMutableList())
+                        onGuitarChange.invoke(newGuitar)
                     }
                 )
 
@@ -75,7 +79,8 @@ fun ChordIdentification(navigationState: String, innerPadding: PaddingValues) {
                     innerPadding = innerPadding,
                     currentGuitar = currentGuitar,
                     onGuitarChange = {
-                        currentGuitar = it
+                        val newGuitar: Guitar = currentGuitar.copy(fretMemory = currentGuitar.fretMemory.toMutableList())
+                        onGuitarChange.invoke(newGuitar)
                     }
                 )
 

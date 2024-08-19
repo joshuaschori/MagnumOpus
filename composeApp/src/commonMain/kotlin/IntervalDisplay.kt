@@ -45,10 +45,11 @@ import classes.Pitch
 
 @Composable
 fun IntervalDisplay(
-    navigationState: String, innerPadding: PaddingValues
+    navigationState: String,
+    innerPadding: PaddingValues,
+    currentGuitar: Guitar,
+    onGuitarChange: (Guitar) -> Unit
 ) {
-    var currentGuitar: Guitar by remember { mutableStateOf(Guitar(isDefaultGuitar = true)) }
-
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -64,7 +65,8 @@ fun IntervalDisplay(
                     innerPadding = innerPadding,
                     currentGuitar = currentGuitar,
                     onGuitarChange = {
-                        currentGuitar = it
+                        val newGuitar: Guitar = currentGuitar.copy(fretMemory = currentGuitar.fretMemory.toMutableList())
+                        onGuitarChange.invoke(newGuitar)
                     }
                 )
 
@@ -88,7 +90,8 @@ fun IntervalDisplay(
                     innerPadding = innerPadding,
                     currentGuitar = currentGuitar,
                     onGuitarChange = {
-                        currentGuitar = it
+                        val newGuitar: Guitar = currentGuitar.copy(fretMemory = currentGuitar.fretMemory.toMutableList())
+                        onGuitarChange.invoke(newGuitar)
                     }
                 )
             }
