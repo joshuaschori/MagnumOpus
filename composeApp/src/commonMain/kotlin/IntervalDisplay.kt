@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -27,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import classes.Chord
 import classes.ChordInterpretation
 import classes.Guitar
 import classes.Pitch
@@ -171,6 +167,54 @@ fun IntervalDisplayText(
     val (checkedState9, onStateChange9) = remember { mutableStateOf(false) }
     val (checkedState10, onStateChange10) = remember { mutableStateOf(false) }
     val (checkedState11, onStateChange11) = remember { mutableStateOf(false) }
+
+    val listOfCheckedStates = listOf(
+        checkedState0, checkedState1, checkedState2, checkedState3, checkedState4,
+        checkedState5, checkedState6, checkedState7, checkedState8, checkedState9,
+        checkedState10, checkedState11
+    )
+
+    val listOfOnStateChanges = listOf(
+        onStateChange0, onStateChange1, onStateChange2, onStateChange3, onStateChange4,
+        onStateChange5, onStateChange6, onStateChange7, onStateChange8, onStateChange9,
+        onStateChange10, onStateChange11
+    )
+
+    val listOfIntervalColors: List<Long> = (0..11).map {
+        when (it) {
+            0 -> settings.getLong("intervalColor0", 0xffee1b24)
+            1 -> settings.getLong("intervalColor1", 0xfff15b22)
+            2 -> settings.getLong("intervalColor2", 0xfff68d1e)
+            3 -> settings.getLong("intervalColor3", 0xfffdb913)
+            4 -> settings.getLong("intervalColor4", 0xfffef100)
+            5 -> settings.getLong("intervalColor5", 0xffc9db2a)
+            6 -> settings.getLong("intervalColor6", 0xff3ab449)
+            7 -> settings.getLong("intervalColor7", 0xff00a89d)
+            8 -> settings.getLong("intervalColor8", 0xff0271bd)
+            9 -> settings.getLong("intervalColor9", 0xff524ea1)
+            10 -> settings.getLong("intervalColor10", 0xff672e91)
+            11 -> settings.getLong("intervalColor11", 0xffb72367)
+            else -> 0xff000000
+        }
+    }
+
+    val listOfIntervalNames: List<String> = (0..11).map {
+        when (it) {
+            0 -> "Root"
+            1 -> "♭2"
+            2 -> "2"
+            3 -> "♭3"
+            4 -> "3"
+            5 -> "4"
+            6 -> "♯4/♭5"
+            7 -> "5"
+            8 -> "♯5/♭6"
+            9 -> "6/\uD834\uDD2B7"
+            10 -> "♯6/♭7"
+            11 -> "7"
+            else -> "error"
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -383,481 +427,54 @@ fun IntervalDisplayText(
                             )
                         }
                     }
-
                 }
             }
         }
 
-        // TODO refactor this after I learn about view models, state, destructuring
-
-        val intervalColor0 = settings.getLong("intervalColor0", 0xffee1b24)
-        val intervalColor1 = settings.getLong("intervalColor1", 0xfff15b22)
-        val intervalColor2 = settings.getLong("intervalColor2", 0xfff68d1e)
-        val intervalColor3 = settings.getLong("intervalColor3", 0xfffdb913)
-        val intervalColor4 = settings.getLong("intervalColor4", 0xfffef100)
-        val intervalColor5 = settings.getLong("intervalColor5", 0xffc9db2a)
-        val intervalColor6 = settings.getLong("intervalColor6", 0xff3ab449)
-        val intervalColor7 = settings.getLong("intervalColor7", 0xff00a89d)
-        val intervalColor8 = settings.getLong("intervalColor8", 0xff0271bd)
-        val intervalColor9 = settings.getLong("intervalColor9", 0xff524ea1)
-        val intervalColor10 = settings.getLong("intervalColor10", 0xff672e91)
-        val intervalColor11 = settings.getLong("intervalColor11", 0xffb72367)
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(100.dp)
-                .toggleable(
-                    value = checkedState0,
-                    onValueChange = { onStateChange0(!checkedState0) },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkedState0,
-                colors = CheckboxColors(
-                    CheckboxDefaults.colors().checkedCheckmarkColor,
-                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
-                    Color(intervalColor0),
-                    CheckboxDefaults.colors().uncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledCheckedBoxColor,
-                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
-                    Color(intervalColor0),
-                    CheckboxDefaults.colors().uncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledBorderColor,
-                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
-                ),
-                modifier = Modifier.scale(0.9f),
-                onCheckedChange = null // null recommended for accessibility with screenreaders
-            )
-            Text(
-                text = "Root",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(100.dp)
-                .toggleable(
-                    value = checkedState1,
-                    onValueChange = { onStateChange1(!checkedState1) },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkedState1,
-                colors = CheckboxColors(
-                    CheckboxDefaults.colors().checkedCheckmarkColor,
-                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
-                    Color(intervalColor1),
-                    CheckboxDefaults.colors().uncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledCheckedBoxColor,
-                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
-                    Color(intervalColor1),
-                    CheckboxDefaults.colors().uncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledBorderColor,
-                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
-                ),
-                modifier = Modifier.scale(0.9f),
-                onCheckedChange = null // null recommended for accessibility with screenreaders
-            )
-            Text(
-                text = "♭2",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(100.dp)
-                .toggleable(
-                    value = checkedState2,
-                    onValueChange = { onStateChange2(!checkedState2) },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkedState2,
-                colors = CheckboxColors(
-                    CheckboxDefaults.colors().checkedCheckmarkColor,
-                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
-                    Color(intervalColor2),
-                    CheckboxDefaults.colors().uncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledCheckedBoxColor,
-                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
-                    Color(intervalColor2),
-                    CheckboxDefaults.colors().uncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledBorderColor,
-                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
-                ),
-                modifier = Modifier.scale(0.9f),
-                onCheckedChange = null // null recommended for accessibility with screenreaders
-            )
-            Text(
-                text = "2",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(100.dp)
-                .toggleable(
-                    value = checkedState3,
-                    onValueChange = { onStateChange3(!checkedState3) },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkedState3,
-                colors = CheckboxColors(
-                    CheckboxDefaults.colors().checkedCheckmarkColor,
-                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
-                    Color(intervalColor3),
-                    CheckboxDefaults.colors().uncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledCheckedBoxColor,
-                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
-                    Color(intervalColor3),
-                    CheckboxDefaults.colors().uncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledBorderColor,
-                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
-                ),
-                modifier = Modifier.scale(0.9f),
-                onCheckedChange = null // null recommended for accessibility with screenreaders
-            )
-            Text(
-                text = "♭3",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(100.dp)
-                .toggleable(
-                    value = checkedState4,
-                    onValueChange = { onStateChange4(!checkedState4) },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkedState4,
-                colors = CheckboxColors(
-                    CheckboxDefaults.colors().checkedCheckmarkColor,
-                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
-                    Color(intervalColor4),
-                    CheckboxDefaults.colors().uncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledCheckedBoxColor,
-                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
-                    Color(intervalColor4),
-                    CheckboxDefaults.colors().uncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledBorderColor,
-                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
-                ),
-                modifier = Modifier.scale(0.9f),
-                onCheckedChange = null // null recommended for accessibility with screenreaders
-            )
-            Text(
-                text = "3",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(100.dp)
-                .toggleable(
-                    value = checkedState5,
-                    onValueChange = { onStateChange5(!checkedState5) },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkedState5,
-                colors = CheckboxColors(
-                    CheckboxDefaults.colors().checkedCheckmarkColor,
-                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
-                    Color(intervalColor5),
-                    CheckboxDefaults.colors().uncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledCheckedBoxColor,
-                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
-                    Color(intervalColor5),
-                    CheckboxDefaults.colors().uncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledBorderColor,
-                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
-                ),
-                modifier = Modifier.scale(0.9f),
-                onCheckedChange = null // null recommended for accessibility with screenreaders
-            )
-            Text(
-                text = "4",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(100.dp)
-                .toggleable(
-                    value = checkedState6,
-                    onValueChange = { onStateChange6(!checkedState6) },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkedState6,
-                colors = CheckboxColors(
-                    CheckboxDefaults.colors().checkedCheckmarkColor,
-                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
-                    Color(intervalColor6),
-                    CheckboxDefaults.colors().uncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledCheckedBoxColor,
-                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
-                    Color(intervalColor6),
-                    CheckboxDefaults.colors().uncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledBorderColor,
-                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
-                ),
-                modifier = Modifier.scale(0.9f),
-                onCheckedChange = null // null recommended for accessibility with screenreaders
-            )
-            Text(
-                text = "♯4/♭5",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(100.dp)
-                .toggleable(
-                    value = checkedState7,
-                    onValueChange = { onStateChange7(!checkedState7) },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkedState7,
-                colors = CheckboxColors(
-                    CheckboxDefaults.colors().checkedCheckmarkColor,
-                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
-                    Color(intervalColor7),
-                    CheckboxDefaults.colors().uncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledCheckedBoxColor,
-                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
-                    Color(intervalColor7),
-                    CheckboxDefaults.colors().uncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledBorderColor,
-                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
-                ),
-                modifier = Modifier.scale(0.9f),
-                onCheckedChange = null // null recommended for accessibility with screenreaders
-            )
-            Text(
-                text = "5",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(100.dp)
-                .toggleable(
-                    value = checkedState8,
-                    onValueChange = { onStateChange8(!checkedState8) },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkedState8,
-                colors = CheckboxColors(
-                    CheckboxDefaults.colors().checkedCheckmarkColor,
-                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
-                    Color(intervalColor8),
-                    CheckboxDefaults.colors().uncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledCheckedBoxColor,
-                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
-                    Color(intervalColor8),
-                    CheckboxDefaults.colors().uncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledBorderColor,
-                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
-                ),
-                modifier = Modifier.scale(0.9f),
-                onCheckedChange = null // null recommended for accessibility with screenreaders
-            )
-            Text(
-                text = "♯5/♭6",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(100.dp)
-                .toggleable(
-                    value = checkedState9,
-                    onValueChange = { onStateChange9(!checkedState9) },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkedState9,
-                colors = CheckboxColors(
-                    CheckboxDefaults.colors().checkedCheckmarkColor,
-                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
-                    Color(intervalColor9),
-                    CheckboxDefaults.colors().uncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledCheckedBoxColor,
-                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
-                    Color(intervalColor9),
-                    CheckboxDefaults.colors().uncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledBorderColor,
-                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
-                ),
-                modifier = Modifier.scale(0.9f),
-                onCheckedChange = null // null recommended for accessibility with screenreaders
-            )
-            Text(
-                text = "6/\uD834\uDD2B7",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(100.dp)
-                .toggleable(
-                    value = checkedState10,
-                    onValueChange = { onStateChange10(!checkedState10) },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkedState10,
-                colors = CheckboxColors(
-                    CheckboxDefaults.colors().checkedCheckmarkColor,
-                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
-                    Color(intervalColor10),
-                    CheckboxDefaults.colors().uncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledCheckedBoxColor,
-                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
-                    Color(intervalColor10),
-                    CheckboxDefaults.colors().uncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledBorderColor,
-                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
-                ),
-                modifier = Modifier.scale(0.9f),
-                onCheckedChange = null // null recommended for accessibility with screenreaders
-            )
-            Text(
-                text = "♯6/♭7",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .width(100.dp)
-                .toggleable(
-                    value = checkedState11,
-                    onValueChange = { onStateChange11(!checkedState11) },
-                    role = Role.Checkbox
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkedState11,
-                colors = CheckboxColors(
-                    CheckboxDefaults.colors().checkedCheckmarkColor,
-                    CheckboxDefaults.colors().uncheckedCheckmarkColor,
-                    Color(intervalColor11),
-                    CheckboxDefaults.colors().uncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledCheckedBoxColor,
-                    CheckboxDefaults.colors().disabledUncheckedBoxColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBoxColor,
-                    Color(intervalColor11),
-                    CheckboxDefaults.colors().uncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledBorderColor,
-                    CheckboxDefaults.colors().disabledUncheckedBorderColor,
-                    CheckboxDefaults.colors().disabledIndeterminateBorderColor
-                ),
-                modifier = Modifier.scale(0.9f),
-                onCheckedChange = null // null recommended for accessibility with screenreaders
-            )
-            Text(
-                text = "7",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 10.dp)
-            )
+        for (index in 0..11) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .width(100.dp)
+                    .toggleable(
+                        value = listOfCheckedStates[index],
+                        onValueChange = { listOfOnStateChanges[index](!listOfCheckedStates[index]) },
+                        role = Role.Checkbox
+                    ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = listOfCheckedStates[index],
+                    colors = CheckboxColors(
+                        CheckboxDefaults.colors().checkedCheckmarkColor,
+                        CheckboxDefaults.colors().uncheckedCheckmarkColor,
+                        Color(listOfIntervalColors[index]),
+                        CheckboxDefaults.colors().uncheckedBoxColor,
+                        CheckboxDefaults.colors().disabledCheckedBoxColor,
+                        CheckboxDefaults.colors().disabledUncheckedBoxColor,
+                        CheckboxDefaults.colors().disabledIndeterminateBoxColor,
+                        Color(listOfIntervalColors[index]),
+                        CheckboxDefaults.colors().uncheckedBorderColor,
+                        CheckboxDefaults.colors().disabledBorderColor,
+                        CheckboxDefaults.colors().disabledUncheckedBorderColor,
+                        CheckboxDefaults.colors().disabledIndeterminateBorderColor
+                    ),
+                    modifier = Modifier.scale(0.9f),
+                    onCheckedChange = null // null recommended for accessibility with screenreaders
+                )
+                Text(
+                    text = listOfIntervalNames[index],
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(start = 10.dp)
+                )
+            }
         }
 
         val currentPitches: MutableList<Pitch> = mutableListOf()
 
-        val checkedStates = listOf(
-            checkedState0, checkedState1, checkedState2, checkedState3, checkedState4,
-            checkedState5, checkedState6, checkedState7, checkedState8, checkedState9,
-            checkedState10, checkedState11
-        )
-
         if (rootChosen.midiValue != -1) {
             currentGuitar.chordMemory.root = rootChosen
-            for ((index, state) in checkedStates.withIndex()) {
+            for ((index, state) in listOfCheckedStates.withIndex()) {
                 if (state) {
                     currentPitches.add(Pitch(rootChosen.midiValue + index))
                 }
