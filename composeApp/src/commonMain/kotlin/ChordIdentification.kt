@@ -125,6 +125,8 @@ fun ChordIdentificationText(
                 pitch.chosenReading.name
             )
         }
+
+        currentGuitar.chordInterpretationRootMemory = currentChord.sortedInterpretationList[selectedInterpretationIndex].root
     }
 
     // create list of selected pitches without repeats
@@ -196,7 +198,7 @@ fun ChordIdentificationText(
                 "Select Notes",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.heightIn(220.dp)
+                modifier = Modifier.heightIn(420.dp)
             )
         }
         else {
@@ -228,76 +230,77 @@ fun ChordIdentificationText(
                 modifier = Modifier.heightIn(40.dp)
             )
 
-            for (pitch in selectedPitchClassesSortedByInterval) {
-                Text(
-                    text = when (
-                        if ((pitch.midiValue % 12) - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12) >= 0)
-                        {
-                            (pitch.midiValue - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12)) % 12
-                        }
-                        else {
-                            (pitch.midiValue - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12) + 12) % 12
-                        }
-                    ) {
-                        11 -> "7"
-                        10 -> if (
-                            currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[10].letterInterval == 6
+            Column(
+                modifier = Modifier.heightIn(200.dp)
+            ) {
+                for (pitch in selectedPitchClassesSortedByInterval) {
+                    Text(
+                        text = when (
+                            if ((pitch.midiValue % 12) - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12) >= 0)
+                            {
+                                (pitch.midiValue - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12)) % 12
+                            }
+                            else {
+                                (pitch.midiValue - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12) + 12) % 12
+                            }
                         ) {
-                            "♭7"
-                        } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[10].letterInterval == 5) {
-                            "♯6"
-                        } else {
-                            "error"
-                        }
-                        9 -> if (
-                            currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[9].letterInterval == 6
-                        ) {
-                            "\uD834\uDD2B7"
-                        } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[9].letterInterval == 5) {
-                            "6"
-                        } else {
-                            "error"
-                        }
-                        8 -> if (
-                            currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[8].letterInterval == 5
-                        ) {
-                            "♭6"
-                        } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[8].letterInterval == 4) {
-                            "♯5"
-                        } else {
-                            "error"
-                        }
-                        7 -> "5"
-                        6 -> if (
-                            currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[6].letterInterval == 4
-                        ) {
-                            "♭5"
-                        } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[6].letterInterval == 3) {
-                            "♯4"
-                        } else {
-                            "error"
-                        }
-                        5 -> "4"
-                        4 -> "3"
-                        3 -> if (
-                            currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[3].letterInterval == 2
-                        ) {
-                            "♭3"
-                        } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[3].letterInterval == 1) {
-                            "♯2"
-                        } else {
-                            "error"
-                        }
-                        2 -> "2"
-                        1 -> "♭2"
-                        0 -> "Root"
-                        else -> "error"
-                    },
-                    fontSize = 16.sp,
-                    modifier = Modifier
-                        .widthIn(150.dp)
-                        .heightIn(40.dp)
-                )
+                            11 -> "7"
+                            10 -> if (
+                                currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[10].letterInterval == 6
+                            ) {
+                                "♭7"
+                            } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[10].letterInterval == 5) {
+                                "♯6"
+                            } else {
+                                "error"
+                            }
+                            9 -> if (
+                                currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[9].letterInterval == 6
+                            ) {
+                                "\uD834\uDD2B7"
+                            } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[9].letterInterval == 5) {
+                                "6"
+                            } else {
+                                "error"
+                            }
+                            8 -> if (
+                                currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[8].letterInterval == 5
+                            ) {
+                                "♭6"
+                            } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[8].letterInterval == 4) {
+                                "♯5"
+                            } else {
+                                "error"
+                            }
+                            7 -> "5"
+                            6 -> if (
+                                currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[6].letterInterval == 4
+                            ) {
+                                "♭5"
+                            } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[6].letterInterval == 3) {
+                                "♯4"
+                            } else {
+                                "error"
+                            }
+                            5 -> "4"
+                            4 -> "3"
+                            3 -> if (
+                                currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[3].letterInterval == 2
+                            ) {
+                                "♭3"
+                            } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[3].letterInterval == 1) {
+                                "♯2"
+                            } else {
+                                "error"
+                            }
+                            2 -> "2"
+                            1 -> "♭2"
+                            0 -> "Root"
+                            else -> "error"
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -344,6 +347,7 @@ fun ChordIdentificationText(
                                         onClick = {
                                             selectedInterpretationIndex = index
                                             interpretationsMenuExpanded = false
+                                            currentGuitar.chordInterpretationRootMemory = currentChord.sortedInterpretationList[index].root
                                         },
                                         text = {
                                             Text(
@@ -386,6 +390,8 @@ fun ChordIdentificationText(
                     currentGuitar.fretMemory[stringIndex].visible = false
                 }
                 currentPitches.clear()
+                selectedInterpretationIndex = 0
+                currentGuitar.chordInterpretationRootMemory = Pitch(-1)
             }
         ) {
             Text("Clear Frets")

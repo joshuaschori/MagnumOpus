@@ -102,8 +102,6 @@ fun IntervalDisplayText(
 ) {
     val scrollState = rememberScrollState()
     var rootMenuExpanded by remember { mutableStateOf(false) }
-    //var rootChosen by remember { mutableStateOf(Pitch(-1)) }
-
     var rootChosen by remember { mutableStateOf(currentGuitar.chordMemory.root) }
 
     val rootMenuLazyListState = rememberLazyListState()
@@ -259,9 +257,9 @@ fun IntervalDisplayText(
                         item {
                             DropdownMenuItem(
                                 onClick = {
-                                    // TODO setting rootChosen to default value of -1 and then to the
-                                    //  proper pitch here is a work around. without this, it will not
-                                    //  recompose from enharmonic equivalents
+                                    // setting rootChosen to default value of -1 and then to the
+                                    // proper pitch here is a work around. without this, it will not
+                                    // recompose from enharmonic equivalents
                                     rootChosen = Pitch(-1)
                                     rootChosen = pitch
                                     rootMenuExpanded = false

@@ -192,12 +192,44 @@ fun GuitarCanvas(
             when (navigationState) {
                 "Chord Identification" -> {
                     repeat(currentGuitar.numberOfStrings) { stringIndex ->
+
+                        val intervalColor0 = settings.getLong("intervalColor0", 0xffee1b24)
+                        val intervalColor1 = settings.getLong("intervalColor1", 0xfff15b22)
+                        val intervalColor2 = settings.getLong("intervalColor2", 0xfff68d1e)
+                        val intervalColor3 = settings.getLong("intervalColor3", 0xfffdb913)
+                        val intervalColor4 = settings.getLong("intervalColor4", 0xfffef100)
+                        val intervalColor5 = settings.getLong("intervalColor5", 0xffc9db2a)
+                        val intervalColor6 = settings.getLong("intervalColor6", 0xff3ab449)
+                        val intervalColor7 = settings.getLong("intervalColor7", 0xff00a89d)
+                        val intervalColor8 = settings.getLong("intervalColor8", 0xff0271bd)
+                        val intervalColor9 = settings.getLong("intervalColor9", 0xff524ea1)
+                        val intervalColor10 = settings.getLong("intervalColor10", 0xff672e91)
+                        val intervalColor11 = settings.getLong("intervalColor11", 0xffb72367)
+
+                        val intervalColor = when (
+                            (currentGuitar.strings[stringIndex].tuning.midiValue + currentGuitar.fretMemory[stringIndex].fretSelected
+                                    + 12 - (currentGuitar.chordInterpretationRootMemory.midiValue % 12)) % 12
+                        ) {
+                            0 -> Color(intervalColor0)
+                            1 -> Color(intervalColor1)
+                            2 -> Color(intervalColor2)
+                            3 -> Color(intervalColor3)
+                            4 -> Color(intervalColor4)
+                            5 -> Color(intervalColor5)
+                            6 -> Color(intervalColor6)
+                            7 -> Color(intervalColor7)
+                            8 -> Color(intervalColor8)
+                            9 -> Color(intervalColor9)
+                            10 -> Color(intervalColor10)
+                            11 -> Color(intervalColor11)
+                            else -> Color.Black
+                        }
+
                         // create indications of fretted notes
                         if (currentGuitar.fretMemory[stringIndex].visible) {
                             drawCircle(
-                                currentGuitar.lineColor,
+                                color = intervalColor,
                                 radius = currentGuitar.frettedNoteSize.dp.toPx(),
-                                style = Stroke(width = currentGuitar.lineThickness.dp.toPx()),
                                 center = Offset(
                                     x = currentGuitar.fretMemory[stringIndex].x.dp.toPx(),
                                     y = currentGuitar.fretMemory[stringIndex].y.dp.toPx()
@@ -265,7 +297,7 @@ fun GuitarCanvas(
                                 }
 
                                 drawCircle(
-                                    intervalColor,
+                                    color = intervalColor,
                                     radius = currentGuitar.frettedNoteSize.dp.toPx(),
                                     center = Offset(
                                         x = stringLocation.dp.toPx(),

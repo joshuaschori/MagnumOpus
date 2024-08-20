@@ -57,6 +57,7 @@ data class Guitar(
             currentTuningInterpretation.chosenPitches[it].chosenReading.name
         }
     }
+    var chordInterpretationRootMemory: Pitch = Pitch(-1)
 
     init {
         // add default open string hidden values to fretMemory for each string
