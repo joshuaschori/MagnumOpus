@@ -115,7 +115,7 @@ fun ChordIdentificationText(
 
     val currentNoteNames: MutableList<String> = mutableStateListOf()
     var currentChord = Chord(mutableListOf(Pitch(0)))
-    var selectedInterpretationIndex = 0
+    var selectedInterpretationIndex by remember { mutableStateOf(0) }
 
     if (currentPitches.size > 0) {
         currentChord = Chord(currentPitches)
@@ -174,7 +174,7 @@ fun ChordIdentificationText(
                 "Select Notes",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.heightIn(160.dp)
+                modifier = Modifier.heightIn(220.dp)
             )
         }
         else {
@@ -197,8 +197,16 @@ fun ChordIdentificationText(
                 },
                 fontSize = 18.sp,
                 modifier = Modifier
-                    .heightIn(100.dp)
+                    .heightIn(80.dp)
             )
+
+            Text(
+                "Structure:",
+                fontSize = 20.sp,
+                modifier = Modifier.heightIn(40.dp)
+            )
+
+            Spacer(modifier = Modifier.height(40.dp))
 
             Box {
                 FilledTonalButton(
@@ -240,6 +248,7 @@ fun ChordIdentificationText(
                                 item {
                                     DropdownMenuItem(
                                         onClick = {
+                                            selectedInterpretationIndex = index
                                             interpretationsMenuExpanded = false
                                         },
                                         text = {
