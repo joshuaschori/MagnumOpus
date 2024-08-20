@@ -185,8 +185,8 @@ class ChordInterpretation(
                 if (AUGMENTED_SECOND in listOfExtensions) {
                     if (intervals[MAJOR_THIRD].inChord) {
                         extensions = extensions + "♯9"
-                        // unused possible subjective reading:
-                        // intervals[augmentedSecond].letterInterval = second
+                        // possible subjective reading:
+                        intervals[AUGMENTED_SECOND].letterInterval = SECOND
                     }
                 }
                 if (PERFECT_FOURTH in listOfExtensions && chordQuality != "suspended4") {
