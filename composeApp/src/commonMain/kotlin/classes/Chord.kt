@@ -1,8 +1,7 @@
 package classes
 
 class Chord(pitches: MutableList<Pitch>) {
-    val chordInterpretationsList: MutableList<ChordInterpretation> = mutableListOf()
-    var chosenInterpretationIndex: Int = 0
+    private val chordInterpretationsList: MutableList<ChordInterpretation> = mutableListOf()
     var chosenChordName: String = ""
     var chosenChordExtensionsPrefix: String = ""
     var chosenChordExtensions: String = ""
