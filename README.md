@@ -1,4 +1,4 @@
-Magnum Opus is a Kotlin Multiplatform app. The app is for guitarists that is able to identify chord 
+Magnum Opus is a Kotlin Multiplatform app. The app is a tool for guitarists that is able to identify chord 
 shapes, display scales, and display voicing options for chords using a fretboard interface. The 
 fretboard can be tuned to any tuning, can have a variable number of strings and frets, and provides 
 contextual information about the function of the pitches.
