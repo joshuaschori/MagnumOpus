@@ -169,40 +169,16 @@ fun ChordIdentificationText(
             .padding(top = insetVertical.dp)
     ) {
         Text(
-            "Notes:",
+            "Chord:",
             fontSize = 20.sp,
             modifier = Modifier
                 .padding(top = insetVertical.dp)
-        )
-
-        if (currentPitches.size == 0) {
-            Text(
-                "Select on Fretboard",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier
-                    .widthIn(150.dp)
-                    .heightIn(40.dp)
-            )
-        }
-        else {
-            Text(
-                currentNoteNames.joinToString("  "),
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .widthIn(150.dp)
-                    .heightIn(40.dp)
-            )
-        }
-
-        Text(
-            "Chord:",
-            fontSize = 20.sp
+                .widthIn(100.dp)
         )
 
         if (currentPitches.size < 2) {
             Text(
-                "Select Notes",
+                "Select Notes\r\non Fretboard",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.heightIn(420.dp)
