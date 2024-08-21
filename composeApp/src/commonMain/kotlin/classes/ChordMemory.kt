@@ -7,4 +7,5 @@ class ChordMemory {
     val checkboxMemory: MutableList<Boolean> = mutableListOf(
         false, false, false, false, false, false, false, false, false, false, false, false
     )
+    var selectedInterpretationIndex: Int = 0
 }

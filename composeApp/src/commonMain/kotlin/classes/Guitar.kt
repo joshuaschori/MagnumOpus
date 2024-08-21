@@ -44,7 +44,7 @@ data class Guitar(
         (0f - fretSpacing * 0.5f) + (fretSpacing * it)
     }
     val fretSelectionRadius = 14f
-    var chordMemory: ChordMemory = ChordMemory()
+    var intervalDisplayMemory: ChordMemory = ChordMemory()
     private val currentTuning: List<Pitch> = (0..< numberOfStrings).map {
         Pitch(strings[it].tuning.midiValue)
     }
@@ -57,7 +57,7 @@ data class Guitar(
             currentTuningInterpretation.chosenPitches[it].chosenReading.name
         }
     }
-    var chordInterpretationRootMemory: Pitch = Pitch(-1)
+    var chordInterpretationMemory: ChordMemory = ChordMemory()
 
     init {
         // add default open string hidden values to fretMemory for each string

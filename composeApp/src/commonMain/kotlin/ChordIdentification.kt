@@ -115,7 +115,7 @@ fun ChordIdentificationText(
 
     val currentNoteNames: MutableList<String> = mutableStateListOf()
     var currentChord = Chord(mutableListOf(Pitch(0)))
-    var selectedInterpretationIndex by remember { mutableStateOf(0) }
+    var selectedInterpretationIndex by remember { mutableStateOf(currentGuitar.chordInterpretationMemory.selectedInterpretationIndex) }
 
     if (currentPitches.size > 0) {
         currentChord = Chord(currentPitches)
@@ -126,7 +126,14 @@ fun ChordIdentificationText(
             )
         }
 
-        currentGuitar.chordInterpretationRootMemory = currentChord.sortedInterpretationList[selectedInterpretationIndex].root
+        currentGuitar.chordInterpretationMemory.root = currentChord.sortedInterpretationList[selectedInterpretationIndex].root
+        currentGuitar.chordInterpretationMemory.pitchClassIntValues.clear()
+        currentGuitar.chordInterpretationMemory.noteNames.clear()
+
+        for (pitch in currentChord.sortedInterpretationList[selectedInterpretationIndex].chosenPitches) {
+            currentGuitar.chordInterpretationMemory.pitchClassIntValues.add(pitch.midiValue % 12)
+            currentGuitar.chordInterpretationMemory.noteNames.add(pitch.chosenReading.name)
+        }
     }
 
     // create list of selected pitches without repeats
@@ -245,53 +252,63 @@ fun ChordIdentificationText(
                             }
                         ) {
                             11 -> "7"
-                            10 -> if (
-                                currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[10].letterInterval == 6
-                            ) {
-                                "♭7"
-                            } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[10].letterInterval == 5) {
-                                "♯6"
-                            } else {
-                                "error"
+                            10 -> when (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[10].letterInterval) {
+                                6 -> {
+                                    "♭7"
+                                }
+                                5 -> {
+                                    "♯6"
+                                }
+                                else -> {
+                                    "error"
+                                }
                             }
-                            9 -> if (
-                                currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[9].letterInterval == 6
-                            ) {
-                                "\uD834\uDD2B7"
-                            } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[9].letterInterval == 5) {
-                                "6"
-                            } else {
-                                "error"
+                            9 -> when (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[9].letterInterval) {
+                                6 -> {
+                                    "\uD834\uDD2B7"
+                                }
+                                5 -> {
+                                    "6"
+                                }
+                                else -> {
+                                    "error"
+                                }
                             }
-                            8 -> if (
-                                currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[8].letterInterval == 5
-                            ) {
-                                "♭6"
-                            } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[8].letterInterval == 4) {
-                                "♯5"
-                            } else {
-                                "error"
+                            8 -> when (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[8].letterInterval) {
+                                5 -> {
+                                    "♭6"
+                                }
+                                4 -> {
+                                    "♯5"
+                                }
+                                else -> {
+                                    "error"
+                                }
                             }
                             7 -> "5"
-                            6 -> if (
-                                currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[6].letterInterval == 4
-                            ) {
-                                "♭5"
-                            } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[6].letterInterval == 3) {
-                                "♯4"
-                            } else {
-                                "error"
+                            6 -> when (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[6].letterInterval) {
+                                4 -> {
+                                    "♭5"
+                                }
+                                3 -> {
+                                    "♯4"
+                                }
+                                else -> {
+                                    "error"
+                                }
                             }
                             5 -> "4"
                             4 -> "3"
-                            3 -> if (
-                                currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[3].letterInterval == 2
-                            ) {
-                                "♭3"
-                            } else if (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[3].letterInterval == 1) {
-                                "♯2"
-                            } else {
-                                "error"
+                            3 -> when (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[3].letterInterval) {
+                                2 -> {
+                                    "♭3"
+                                }
+                                1 -> {
+                                    "♯2"
+                                }
+                                else -> {
+                                    "error"
+                                }
                             }
                             2 -> "2"
                             1 -> "♭2"
@@ -346,8 +363,9 @@ fun ChordIdentificationText(
                                     DropdownMenuItem(
                                         onClick = {
                                             selectedInterpretationIndex = index
+                                            currentGuitar.chordInterpretationMemory.selectedInterpretationIndex = index
                                             interpretationsMenuExpanded = false
-                                            currentGuitar.chordInterpretationRootMemory = currentChord.sortedInterpretationList[index].root
+                                            currentGuitar.chordInterpretationMemory.root = currentChord.sortedInterpretationList[index].root
                                         },
                                         text = {
                                             Text(
@@ -391,7 +409,9 @@ fun ChordIdentificationText(
                 }
                 currentPitches.clear()
                 selectedInterpretationIndex = 0
-                currentGuitar.chordInterpretationRootMemory = Pitch(-1)
+                currentGuitar.chordInterpretationMemory.root = Pitch(-1)
+                currentGuitar.chordInterpretationMemory.pitchClassIntValues.clear()
+                currentGuitar.chordInterpretationMemory.noteNames.clear()
             }
         ) {
             Text("Clear Frets")

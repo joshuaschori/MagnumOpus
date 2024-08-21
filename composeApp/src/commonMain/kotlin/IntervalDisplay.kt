@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
@@ -102,7 +101,7 @@ fun IntervalDisplayText(
 ) {
     val scrollState = rememberScrollState()
     var rootMenuExpanded by remember { mutableStateOf(false) }
-    var rootChosen by remember { mutableStateOf(currentGuitar.chordMemory.root) }
+    var rootChosen by remember { mutableStateOf(currentGuitar.intervalDisplayMemory.root) }
 
     val rootMenuLazyListState = rememberLazyListState()
     val rootMenuItemsPitches = listOf(
@@ -154,18 +153,18 @@ fun IntervalDisplayText(
     )
     val typeMenuLazyListState = rememberLazyListState()
 
-    val (checkedState0, onStateChange0) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[0]) }
-    val (checkedState1, onStateChange1) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[1]) }
-    val (checkedState2, onStateChange2) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[2]) }
-    val (checkedState3, onStateChange3) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[3]) }
-    val (checkedState4, onStateChange4) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[4]) }
-    val (checkedState5, onStateChange5) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[5]) }
-    val (checkedState6, onStateChange6) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[6]) }
-    val (checkedState7, onStateChange7) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[7]) }
-    val (checkedState8, onStateChange8) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[8]) }
-    val (checkedState9, onStateChange9) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[9]) }
-    val (checkedState10, onStateChange10) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[10]) }
-    val (checkedState11, onStateChange11) = remember { mutableStateOf(currentGuitar.chordMemory.checkboxMemory[11]) }
+    val (checkedState0, onStateChange0) = remember { mutableStateOf(currentGuitar.intervalDisplayMemory.checkboxMemory[0]) }
+    val (checkedState1, onStateChange1) = remember { mutableStateOf(currentGuitar.intervalDisplayMemory.checkboxMemory[1]) }
+    val (checkedState2, onStateChange2) = remember { mutableStateOf(currentGuitar.intervalDisplayMemory.checkboxMemory[2]) }
+    val (checkedState3, onStateChange3) = remember { mutableStateOf(currentGuitar.intervalDisplayMemory.checkboxMemory[3]) }
+    val (checkedState4, onStateChange4) = remember { mutableStateOf(currentGuitar.intervalDisplayMemory.checkboxMemory[4]) }
+    val (checkedState5, onStateChange5) = remember { mutableStateOf(currentGuitar.intervalDisplayMemory.checkboxMemory[5]) }
+    val (checkedState6, onStateChange6) = remember { mutableStateOf(currentGuitar.intervalDisplayMemory.checkboxMemory[6]) }
+    val (checkedState7, onStateChange7) = remember { mutableStateOf(currentGuitar.intervalDisplayMemory.checkboxMemory[7]) }
+    val (checkedState8, onStateChange8) = remember { mutableStateOf(currentGuitar.intervalDisplayMemory.checkboxMemory[8]) }
+    val (checkedState9, onStateChange9) = remember { mutableStateOf(currentGuitar.intervalDisplayMemory.checkboxMemory[9]) }
+    val (checkedState10, onStateChange10) = remember { mutableStateOf(currentGuitar.intervalDisplayMemory.checkboxMemory[10]) }
+    val (checkedState11, onStateChange11) = remember { mutableStateOf(currentGuitar.intervalDisplayMemory.checkboxMemory[11]) }
 
     val listOfCheckedStates = listOf(
         checkedState0, checkedState1, checkedState2, checkedState3, checkedState4,
@@ -264,7 +263,7 @@ fun IntervalDisplayText(
                                     rootChosen = pitch
                                     rootMenuExpanded = false
                                     onStateChange0(true)
-                                    currentGuitar.chordMemory.checkboxMemory[0] = true
+                                    currentGuitar.intervalDisplayMemory.checkboxMemory[0] = true
                                 },
                                 text = { Text(pitch.chosenReading.name) },
                                 modifier = if (rootChosen.chosenReading.name == pitch.chosenReading.name) {
@@ -319,8 +318,8 @@ fun IntervalDisplayText(
                                         "Major" -> run {
                                             for ((index, state) in listOfOnStateChanges.withIndex()) {
                                                 when (index) {
-                                                    0,4,7 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
-                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                    0,4,7 -> run { state(true); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = false }
                                                 }
                                             }
                                         }
@@ -328,8 +327,8 @@ fun IntervalDisplayText(
                                         "Minor" -> run {
                                             for ((index, state) in listOfOnStateChanges.withIndex()) {
                                                 when (index) {
-                                                    0,3,7 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
-                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                    0,3,7 -> run { state(true); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = false }
                                                 }
                                             }
                                         }
@@ -337,8 +336,8 @@ fun IntervalDisplayText(
                                         "Diminished" -> run {
                                             for ((index, state) in listOfOnStateChanges.withIndex()) {
                                                 when (index) {
-                                                    0,3,6 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
-                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                    0,3,6 -> run { state(true); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = false }
                                                 }
                                             }
                                         }
@@ -346,8 +345,8 @@ fun IntervalDisplayText(
                                         "Dominant" -> run {
                                             for ((index, state) in listOfOnStateChanges.withIndex()) {
                                                 when (index) {
-                                                    0,4,7,10 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
-                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                    0,4,7,10 -> run { state(true); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = false }
                                                 }
                                             }
                                         }
@@ -355,8 +354,8 @@ fun IntervalDisplayText(
                                         "Augmented" -> run {
                                             for ((index, state) in listOfOnStateChanges.withIndex()) {
                                                 when (index) {
-                                                    0,4,8 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
-                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                    0,4,8 -> run { state(true); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = false }
                                                 }
                                             }
                                         }
@@ -364,8 +363,8 @@ fun IntervalDisplayText(
                                         "Suspended 4th" -> run {
                                             for ((index, state) in listOfOnStateChanges.withIndex()) {
                                                 when (index) {
-                                                    0,5,7 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
-                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                    0,5,7 -> run { state(true); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = false }
                                                 }
                                             }
                                         }
@@ -373,8 +372,8 @@ fun IntervalDisplayText(
                                         "Suspended 2nd" -> run {
                                             for ((index, state) in listOfOnStateChanges.withIndex()) {
                                                 when (index) {
-                                                    0,2,7 -> run { state(true); currentGuitar.chordMemory.checkboxMemory[index] = true }
-                                                    else -> run { state(false); currentGuitar.chordMemory.checkboxMemory[index] = false }
+                                                    0,2,7 -> run { state(true); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = true }
+                                                    else -> run { state(false); currentGuitar.intervalDisplayMemory.checkboxMemory[index] = false }
                                                 }
                                             }
                                         }
@@ -399,7 +398,7 @@ fun IntervalDisplayText(
                         value = listOfCheckedStates[index],
                         onValueChange = {
                             listOfOnStateChanges[index](!listOfCheckedStates[index])
-                            currentGuitar.chordMemory.checkboxMemory[index] = !listOfCheckedStates[index]
+                            currentGuitar.intervalDisplayMemory.checkboxMemory[index] = !listOfCheckedStates[index]
                         },
                         role = Role.Checkbox
                     ),
@@ -435,7 +434,7 @@ fun IntervalDisplayText(
         val currentPitches: MutableList<Pitch> = mutableListOf()
 
         if (rootChosen.midiValue != -1) {
-            currentGuitar.chordMemory.root = rootChosen
+            currentGuitar.intervalDisplayMemory.root = rootChosen
             for ((index, state) in listOfCheckedStates.withIndex()) {
                 if (state) {
                     currentPitches.add(Pitch(rootChosen.midiValue + index))
@@ -450,12 +449,12 @@ fun IntervalDisplayText(
                 currentPitches,
                 rootAlreadyHasReading = rootChosen.chosenReading.accidental.type
             )
-            currentGuitar.chordMemory.pitchClassIntValues.clear()
-            currentGuitar.chordMemory.noteNames.clear()
+            currentGuitar.intervalDisplayMemory.pitchClassIntValues.clear()
+            currentGuitar.intervalDisplayMemory.noteNames.clear()
 
             for (pitch in currentChordInterpretation.chosenPitches) {
-                currentGuitar.chordMemory.pitchClassIntValues.add(pitch.midiValue % 12)
-                currentGuitar.chordMemory.noteNames.add(pitch.chosenReading.name)
+                currentGuitar.intervalDisplayMemory.pitchClassIntValues.add(pitch.midiValue % 12)
+                currentGuitar.intervalDisplayMemory.noteNames.add(pitch.chosenReading.name)
             }
         }
 
@@ -465,9 +464,9 @@ fun IntervalDisplayText(
             onClick = {
                 rootChosen = Pitch(-1)
                 currentPitches.clear()
-                currentGuitar.chordMemory.root = Pitch(-1)
-                currentGuitar.chordMemory.noteNames.clear()
-                currentGuitar.chordMemory.pitchClassIntValues.clear()
+                currentGuitar.intervalDisplayMemory.root = Pitch(-1)
+                currentGuitar.intervalDisplayMemory.noteNames.clear()
+                currentGuitar.intervalDisplayMemory.pitchClassIntValues.clear()
                 for (change in listOfOnStateChanges) {
                     change(false)
                 }

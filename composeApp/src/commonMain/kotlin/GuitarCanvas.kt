@@ -208,7 +208,7 @@ fun GuitarCanvas(
 
                         val intervalColor = when (
                             (currentGuitar.strings[stringIndex].tuning.midiValue + currentGuitar.fretMemory[stringIndex].fretSelected
-                                    + 12 - (currentGuitar.chordInterpretationRootMemory.midiValue % 12)) % 12
+                                    + 12 - (currentGuitar.chordInterpretationMemory.root.midiValue % 12)) % 12
                         ) {
                             0 -> Color(intervalColor0)
                             1 -> Color(intervalColor1)
@@ -235,7 +235,34 @@ fun GuitarCanvas(
                                     y = currentGuitar.fretMemory[stringIndex].y.dp.toPx()
                                 ),
                             )
+
+                            var textToDraw = ""
+
+                            val chordMemoryIndex =
+                                currentGuitar.chordInterpretationMemory.pitchClassIntValues.indexOfFirst {
+                                    it == (currentGuitar.strings[stringIndex].tuning.midiValue + currentGuitar.fretMemory[stringIndex].fretSelected) % 12
+                                } // -1 if not found
+                            if (chordMemoryIndex >= 0) {
+                                textToDraw = currentGuitar.chordInterpretationMemory.noteNames[chordMemoryIndex]
+                            }
+
+                            val style = TextStyle(
+                                fontSize = 14.sp,
+                                color = Color.Black,
+                            )
+                            val textLayoutResult = textMeasurer.measure(textToDraw, style)
+
+                            drawText(
+                                textMeasurer = textMeasurer,
+                                text = textToDraw,
+                                style = style,
+                                topLeft = Offset(
+                                    x = currentGuitar.fretMemory[stringIndex].x.dp.toPx() - textLayoutResult.size.width / 2,
+                                    y = currentGuitar.fretMemory[stringIndex].y.dp.toPx() - textLayoutResult.size.height / 2
+                                )
+                            )
                         }
+
                         // create X shapes for strings that aren't being played
                         else {
                             val path = Path()
@@ -263,7 +290,7 @@ fun GuitarCanvas(
                 "Interval Display" -> {
                     for ((stringIndex, stringLocation) in currentGuitar.stringLocations.withIndex()) {
                         for ((fretIndex, fretLocation) in currentGuitar.fretLocations.withIndex()) {
-                            if ((currentGuitar.strings[stringIndex].tuning.midiValue + fretIndex) % 12 in currentGuitar.chordMemory.pitchClassIntValues) {
+                            if ((currentGuitar.strings[stringIndex].tuning.midiValue + fretIndex) % 12 in currentGuitar.intervalDisplayMemory.pitchClassIntValues) {
                                 val intervalColor0 = settings.getLong("intervalColor0", 0xffee1b24)
                                 val intervalColor1 = settings.getLong("intervalColor1", 0xfff15b22)
                                 val intervalColor2 = settings.getLong("intervalColor2", 0xfff68d1e)
@@ -279,7 +306,7 @@ fun GuitarCanvas(
 
                                 val intervalColor = when (
                                     (currentGuitar.strings[stringIndex].tuning.midiValue + fretIndex
-                                        + 12 - (currentGuitar.chordMemory.root.midiValue % 12)) % 12
+                                        + 12 - (currentGuitar.intervalDisplayMemory.root.midiValue % 12)) % 12
                                 ) {
                                     0 -> Color(intervalColor0)
                                     1 -> Color(intervalColor1)
@@ -307,9 +334,9 @@ fun GuitarCanvas(
 
                                 var textToDraw = ""
 
-                                val chordMemoryIndex = currentGuitar.chordMemory.pitchClassIntValues.indexOfFirst { it == (currentGuitar.strings[stringIndex].tuning.midiValue + fretIndex) % 12 } // -1 if not found
+                                val chordMemoryIndex = currentGuitar.intervalDisplayMemory.pitchClassIntValues.indexOfFirst { it == (currentGuitar.strings[stringIndex].tuning.midiValue + fretIndex) % 12 } // -1 if not found
                                 if (chordMemoryIndex >= 0) {
-                                    textToDraw = currentGuitar.chordMemory.noteNames[chordMemoryIndex]
+                                    textToDraw = currentGuitar.intervalDisplayMemory.noteNames[chordMemoryIndex]
                                 }
 
                                 val style = TextStyle(
