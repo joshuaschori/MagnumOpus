@@ -1,28 +1,17 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop, Server.
+Magnum Opus is a Kotlin Multiplatform app for guitarists that is able to identify chord shapes, 
+display scales, and display voicing options for chords using a fretboard interface. The fretboard 
+can be tuned to any tuning, can have a variable number of strings and frets, and provides 
+contextual information about the function of the pitches.
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+* `Chord Identification` allows you to tap on the frets of each of the strings and then 
+displays the most likely reading of the chord implied by the fretted notes. Tap the \"Alternative 
+Readings\" button to view and select other possible readings of the chord based on each of the 
+other notes as the root.
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+* `Interval Display` takes a root note and displays intervals from that note in every octave 
+across the fretboard. Select the intervals for a scale to view it in the selected tuning, or select 
+the intervals that make up a chord to view all of the possible notes within that chord and inform 
+your decision of how to voice that chord.
 
-* `/server` is for the Ktor server application.
-  * TODO - delete this module, it's no longer needed
-
-* `/shared` is for the code that will be shared between all targets in the project.
-  The most important subfolder is `commonMain`. If preferred, you can add code to the platform-specific folders here too.
-
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
-
-**Note:** Compose/Web is Experimental and may be changed at any time. Use it only for evaluation purposes.
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [GitHub](https://github.com/JetBrains/compose-multiplatform/issues).
-
-You can open the web application by running the `:composeApp:wasmJsBrowserDevelopmentRun` Gradle task.
+* `Settings` sets up your guitar to have between 4 and 8 strings of any tuning and 
+between 12 and 24 frets. Select which page you would like to view by default upon opening the app.

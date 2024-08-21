@@ -182,7 +182,6 @@ fun ChordIdentificationText(
                 "Select Notes\r\non Fretboard",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.heightIn(370.dp)
             )
         }
         else {
@@ -348,7 +347,7 @@ fun ChordIdentificationText(
                          .heightIn(60.dp)
                 ) {
                     Text(
-                        "Alternate\r\nReadings"
+                        "Alternative\r\nReadings"
                     )
                 }
                 DropdownMenu(
@@ -412,26 +411,26 @@ fun ChordIdentificationText(
                     }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
-        FilledTonalButton(
-            onClick = {
-                for ((stringIndex) in currentGuitar.fretMemory.withIndex()) {
-                    currentGuitar.fretMemory[stringIndex].x = currentGuitar.stringSpacing * stringIndex
-                    currentGuitar.fretMemory[stringIndex].y = 0f - currentGuitar.fretSpacing * 0.5f
-                    currentGuitar.fretMemory[stringIndex].fretSelected = 0
-                    currentGuitar.fretMemory[stringIndex].visible = false
+            FilledTonalButton(
+                onClick = {
+                    for ((stringIndex) in currentGuitar.fretMemory.withIndex()) {
+                        currentGuitar.fretMemory[stringIndex].x = currentGuitar.stringSpacing * stringIndex
+                        currentGuitar.fretMemory[stringIndex].y = 0f - currentGuitar.fretSpacing * 0.5f
+                        currentGuitar.fretMemory[stringIndex].fretSelected = 0
+                        currentGuitar.fretMemory[stringIndex].visible = false
+                    }
+                    currentPitches.clear()
+                    selectedInterpretationIndex = 0
+                    currentGuitar.chordInterpretationMemory.root = Pitch(-1)
+                    currentGuitar.chordInterpretationMemory.pitchClassIntValues.clear()
+                    currentGuitar.chordInterpretationMemory.noteNames.clear()
                 }
-                currentPitches.clear()
-                selectedInterpretationIndex = 0
-                currentGuitar.chordInterpretationMemory.root = Pitch(-1)
-                currentGuitar.chordInterpretationMemory.pitchClassIntValues.clear()
-                currentGuitar.chordInterpretationMemory.noteNames.clear()
+            ) {
+                Text("Clear Frets")
             }
-        ) {
-            Text("Clear Frets")
         }
     }
 }

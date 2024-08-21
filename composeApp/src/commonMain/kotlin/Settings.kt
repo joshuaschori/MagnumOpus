@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import classes.FretMemory
 import classes.Guitar
 import classes.Pitch
 
@@ -65,7 +64,7 @@ fun Settings(
         var sliderPosition by remember { mutableFloatStateOf(settings.getInt("number of frets", 15).toFloat()) }
 
         val startScreenString: String = settings.getString("startScreen", "Home")
-        val radioOptions = listOf("Home", "Interval Display", "Chord Identification", "Settings")
+        val radioOptions = listOf("Home", "Chord Identification", "Interval Display", "Settings")
         val (selectedOption, onOptionSelected) = remember { mutableStateOf(startScreenString) }
 
         // if no tuning settings, populate with default tuning
