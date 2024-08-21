@@ -1,3 +1,4 @@
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -173,7 +174,7 @@ fun ChordIdentificationText(
             fontSize = 20.sp,
             modifier = Modifier
                 .padding(top = insetVertical.dp)
-                .widthIn(100.dp)
+                .widthIn(150.dp)
         )
 
         if (currentPitches.size < 2) {
@@ -181,7 +182,7 @@ fun ChordIdentificationText(
                 "Select Notes\r\non Fretboard",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.heightIn(420.dp)
+                modifier = Modifier.heightIn(370.dp)
             )
         }
         else {
@@ -214,9 +215,46 @@ fun ChordIdentificationText(
             )
 
             Column(
-                modifier = Modifier.heightIn(200.dp)
+                modifier = Modifier.heightIn(150.dp)
             ) {
+                val intervalColor0 = settings.getLong("intervalColor0", 0xffee1b24)
+                val intervalColor1 = settings.getLong("intervalColor1", 0xfff15b22)
+                val intervalColor2 = settings.getLong("intervalColor2", 0xfff68d1e)
+                val intervalColor3 = settings.getLong("intervalColor3", 0xfffdb913)
+                val intervalColor4 = settings.getLong("intervalColor4", 0xfffef100)
+                val intervalColor5 = settings.getLong("intervalColor5", 0xffc9db2a)
+                val intervalColor6 = settings.getLong("intervalColor6", 0xff3ab449)
+                val intervalColor7 = settings.getLong("intervalColor7", 0xff00a89d)
+                val intervalColor8 = settings.getLong("intervalColor8", 0xff0271bd)
+                val intervalColor9 = settings.getLong("intervalColor9", 0xff524ea1)
+                val intervalColor10 = settings.getLong("intervalColor10", 0xff672e91)
+                val intervalColor11 = settings.getLong("intervalColor11", 0xffb72367)
+
                 for (pitch in selectedPitchClassesSortedByInterval) {
+                    val intervalColor = when (
+                        if ((pitch.midiValue % 12) - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12) >= 0)
+                        {
+                            (pitch.midiValue - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12)) % 12
+                        }
+                        else {
+                            (pitch.midiValue - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12) + 12) % 12
+                        }
+                    ) {
+                        0 -> Color(intervalColor0)
+                        1 -> Color(intervalColor1)
+                        2 -> Color(intervalColor2)
+                        3 -> Color(intervalColor3)
+                        4 -> Color(intervalColor4)
+                        5 -> Color(intervalColor5)
+                        6 -> Color(intervalColor6)
+                        7 -> Color(intervalColor7)
+                        8 -> Color(intervalColor8)
+                        9 -> Color(intervalColor9)
+                        10 -> Color(intervalColor10)
+                        11 -> Color(intervalColor11)
+                        else -> Color.Black
+                    }
+
                     Text(
                         text = when (
                             if ((pitch.midiValue % 12) - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12) >= 0)
@@ -227,13 +265,13 @@ fun ChordIdentificationText(
                                 (pitch.midiValue - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12) + 12) % 12
                             }
                         ) {
-                            11 -> "7"
+                            11 -> "Major 7th (7)"
                             10 -> when (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[10].letterInterval) {
                                 6 -> {
-                                    "♭7"
+                                    "Minor 7th (♭7)"
                                 }
                                 5 -> {
-                                    "♯6"
+                                    "Augmented 6th (♯6)"
                                 }
                                 else -> {
                                     "error"
@@ -241,10 +279,10 @@ fun ChordIdentificationText(
                             }
                             9 -> when (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[9].letterInterval) {
                                 6 -> {
-                                    "\uD834\uDD2B7"
+                                    "Diminished 7th (\uD834\uDD2B7)"
                                 }
                                 5 -> {
-                                    "6"
+                                    "Major 6th (6)"
                                 }
                                 else -> {
                                     "error"
@@ -252,46 +290,49 @@ fun ChordIdentificationText(
                             }
                             8 -> when (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[8].letterInterval) {
                                 5 -> {
-                                    "♭6"
+                                    "Minor 6th (♭6)"
                                 }
                                 4 -> {
-                                    "♯5"
+                                    "Augmented 5th (♯5)"
                                 }
                                 else -> {
                                     "error"
                                 }
                             }
-                            7 -> "5"
+                            7 -> "Perfect 5th (5)"
                             6 -> when (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[6].letterInterval) {
                                 4 -> {
-                                    "♭5"
+                                    "Diminished 5th (♭5)"
                                 }
                                 3 -> {
-                                    "♯4"
+                                    "Augmented 4th (♯4)"
                                 }
                                 else -> {
                                     "error"
                                 }
                             }
-                            5 -> "4"
-                            4 -> "3"
+                            5 -> "Perfect 4th (4)"
+                            4 -> "Major 3rd (3)"
                             3 -> when (currentChord.sortedInterpretationList[selectedInterpretationIndex].intervals[3].letterInterval) {
                                 2 -> {
-                                    "♭3"
+                                    "Minor 3rd (♭3)"
                                 }
                                 1 -> {
-                                    "♯2"
+                                    "Augmented 2nd (♯2)"
                                 }
                                 else -> {
                                     "error"
                                 }
                             }
-                            2 -> "2"
-                            1 -> "♭2"
-                            0 -> "Root"
+                            2 -> "Major 2nd (2)"
+                            1 -> "Minor 2nd (♭2)"
+                            0 -> "Root (1)"
                             else -> "error"
                         },
                         style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier
+                            .background(intervalColor)
+                            .widthIn(150.dp)
                     )
                 }
             }
