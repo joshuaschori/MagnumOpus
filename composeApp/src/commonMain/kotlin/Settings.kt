@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import classes.FretMemory
 import classes.Guitar
 import classes.Pitch
 
@@ -366,6 +367,18 @@ fun Settings(
                     onValueChange = {
                         sliderPosition = it
                         settings.putInt("number of frets", it.toInt())
+
+                        for ((index, memory) in currentGuitar.fretMemory.withIndex()) {
+                            if (memory.fretSelected > it.toInt()) {
+                                memory.x = currentGuitar.stringSpacing * index
+                                memory.y = 0f - currentGuitar.fretSpacing * 0.5f
+                                memory.fretSelected = 0
+                                memory.visible = false
+                            }
+                        }
+
+                        val newGuitar: Guitar = currentGuitar.copy(fretMemory = currentGuitar.fretMemory.toMutableList())
+                        onGuitarChange.invoke(newGuitar)
                     },
                     steps = 10,
                     valueRange = 12f..24f,
