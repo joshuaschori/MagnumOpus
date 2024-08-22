@@ -74,9 +74,8 @@ can be an augmented fourth or a diminished fifth), we use the applyRelevancy fun
 ChordInterpretation's relevancyScore, and we use the applyExtensions function once we know how 
 to interpret the notes that aren't essential to the quality of the chord. After all this is done, 
 we know enough to determine the reading for this ChordInterpretation. The Pitch class takes in a midiValue 
-parameter, and from that midiValue it can 
-determine a naturalReading, sharpReading, and flatReading, each being a PitchSpelling that 
-contains a chromaticValue corresponding to the "pitch class" (a pitch without 
+parameter, and from that midiValue it can determine a naturalReading, sharpReading, and flatReading, 
+each being a PitchSpelling that contains a chromaticValue corresponding to the "pitch class" (a pitch without 
 context of octave), a PitchLetter (A,B,C,D,E,F,G), and an Accidental (flat, sharp, natural, etc.). 
 If the ChordInterpretation's root is natural, we have enough information for each Pitch's 
 chosenReading to be updated to on of the three readings. If the ChordInterpretation's root is not 
