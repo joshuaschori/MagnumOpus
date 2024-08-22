@@ -88,7 +88,7 @@ that could use some tweaking, as choosing between the ChordInterpretations is a 
 subjective thing that is hard to quantify, depending on contextual factors such as how many 
 of each pitch there are and how high or low their frequency is in relation to others. The values I have 
 in the class are kind of arbitrary and very often result in the interpretation that I would personally 
-choose for most chords, but I will eventually add more tests in order to fine tune these values.  
+choose for most chords, but I will eventually add more tests in order to fine tune these values. 
 `ChordIdentification.kt` also has an "Alternative Readings" button with which you can view and select these other 
 possible interpretations.
 * `IntervalDisplay.kt` uses the classes that were developed for `ChordIdentification.kt` and instead 
