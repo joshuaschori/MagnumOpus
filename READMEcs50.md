@@ -62,7 +62,7 @@ being able to take a midiValue of 29 and be able to know whether that frequency 
 and the major third within a Db chord, or an E# note and the augmented fifth within a A 
 augmented chord. ChordInterpretation has a big scary if/else statement in the init block within which it looks at 
 the most important intervals that determine the identity of a chord, and first categorizes the pitches 
-in reference to the root, divorced from how they might be read. Having the pitches' frequencies correspond  
+in reference to the root, divorced from how they might be read. Having the pitches' frequencies correspond 
 to MIDI values, determining how many semitones these are from the root, and determining whether 
 a chord is major, minor, diminished, etc. precedes any possible reading of the values as musical 
 notes on a sheet of staff paper, since the root note might have an ambiguous reading (such as being an 
