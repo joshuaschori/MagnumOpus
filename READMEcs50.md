@@ -91,10 +91,26 @@ in the class are kind of arbitrary and very often result in the interpretation t
 choose for most chords, but I will eventually add more tests in order to fine tune these values. 
 `ChordIdentification.kt` also has an "Alternative Readings" button with which you can view and select these other 
 possible interpretations.
+* `Home.kt` isn't much to write home about, it describes the app and it's different functionalities. 
+At some point in the future I might want to display any necessary helpful information in selected 
+popups, and rethink the ModalNavigationDrawer if getting rid of the Home page makes the drawer seem 
+excessive.
 * `IntervalDisplay.kt` uses the classes that were developed for `ChordIdentification.kt` and instead 
 takes a root note as input, and displays that pitch class in every octave across the fretboard, 
 along with any other chosen intervals that you can toggle. This allows you to view scales or view 
 all the possible notes that are in a chord to help make voicing decisions, or help you adventure into a new weird
-tuning.
+tuning. Developing this functionality necessitated me adding a rootAlreadyHasReading variable to 
+the ChordInterpretation class, to allow the user to choose an A# or a Bb and have it reflected 
+on the fretboard, rather than have the ChordInterpretation class decide which one would be 
+cleaner to look at. The pitch names on the fretboard are determined by creating a 
+ChordInterpretation with the selected root. There could be an argument to split up this 
+functionality into a scales option and a chord option, as the note names are currently 
+determined by their function within all selected intervals as a chord. Looking at the 
+chromatic scale can result in a triple sharp in one situation (A# with all intervals selected), 
+which is subjective whether or not this best describes the function of the note.
 * `Settings.kt` allows you to set up your Guitar to have between 4 and 8 strings, change the 
-tuning of each string, and adjust the number of frets that are displayed by `GuitarCanvas.kt`.
+tuning of each string, and adjust the number of frets that are displayed by `GuitarCanvas.kt`. The 
+choices that you make are stored on your device using russhwolf's multiplatform-settings library, 
+so you can also set your start screen to whichever page you want and retain the guitar setup that 
+you've chosen. If changing the number of frets results in a FretMemory being off the GuitarCanvas, 
+it is reset to default in order to avoid a crash.
