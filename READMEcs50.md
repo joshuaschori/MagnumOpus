@@ -1,5 +1,5 @@
 # Magnum Opus
-#### Video Demo:  <URL HERE>
+#### Video Demo:  https://www.youtube.com/watch?v=pM8rKoxoiqI
 #### Description:
 Alongside my time with CS50, I also worked through Google's lessons for Android development, 
 and I thought that the CS50 final project was a perfect opportunity to combine what I had been 

@@ -50,7 +50,7 @@ fun ChordIdentification(
             .fillMaxHeight()
             .padding(paddingValues = innerPadding)
     ) {
-        if (settings.getInt("number of strings", 6) <= 6) {
+        if (settings.getInt("number of strings", 6) <= 8) {
             Row(
                 modifier = Modifier
                     .fillMaxHeight()
