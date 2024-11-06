@@ -443,6 +443,7 @@ fun ChordIdentificationText(
                     }
                     currentPitches.clear()
                     selectedInterpretationIndex = 0
+                    currentGuitar.chordInterpretationMemory.selectedInterpretationIndex = 0
                     currentGuitar.chordInterpretationMemory.root = Pitch(-1)
                     currentGuitar.chordInterpretationMemory.pitchClassIntValues.clear()
                     currentGuitar.chordInterpretationMemory.noteNames.clear()
