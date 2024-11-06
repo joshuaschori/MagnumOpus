@@ -1,5 +1,56 @@
 package ui.theme
 import androidx.compose.ui.graphics.Color
+import settings
+
+const val defaultInterval0ColorRed = 238
+const val defaultInterval0ColorGreen = 27
+const val defaultInterval0ColorBlue = 36
+
+const val defaultInterval1ColorRed = 241
+const val defaultInterval1ColorGreen = 91
+const val defaultInterval1ColorBlue = 34
+
+const val defaultInterval2ColorRed = 246
+const val defaultInterval2ColorGreen = 141
+const val defaultInterval2ColorBlue = 30
+
+const val defaultInterval3ColorRed = 253
+const val defaultInterval3ColorGreen = 185
+const val defaultInterval3ColorBlue = 19
+
+const val defaultInterval4ColorRed = 254
+const val defaultInterval4ColorGreen = 241
+const val defaultInterval4ColorBlue = 0
+
+const val defaultInterval5ColorRed = 201
+const val defaultInterval5ColorGreen = 219
+const val defaultInterval5ColorBlue = 42
+
+const val defaultInterval6ColorRed = 58
+const val defaultInterval6ColorGreen = 180
+const val defaultInterval6ColorBlue = 73
+
+const val defaultInterval7ColorRed = 0
+const val defaultInterval7ColorGreen = 168
+const val defaultInterval7ColorBlue = 157
+
+const val defaultInterval8ColorRed = 2
+const val defaultInterval8ColorGreen = 113
+const val defaultInterval8ColorBlue = 189
+
+const val defaultInterval9ColorRed = 82
+const val defaultInterval9ColorGreen = 78
+const val defaultInterval9ColorBlue = 161
+
+const val defaultInterval10ColorRed = 103
+const val defaultInterval10ColorGreen = 46
+const val defaultInterval10ColorBlue = 145
+
+const val defaultInterval11ColorRed = 183
+const val defaultInterval11ColorGreen = 35
+const val defaultInterval11ColorBlue = 103
+
+const val defaultIntervalColorAlpha = 255
 
 val primaryLight = Color(0xFF8F4C38)
 val onPrimaryLight = Color(0xFFFFFFFF)

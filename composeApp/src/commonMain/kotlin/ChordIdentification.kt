@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
@@ -36,7 +37,45 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import classes.Chord
 import classes.Guitar
+import classes.IntervalColor
 import classes.Pitch
+import ui.theme.defaultInterval0ColorBlue
+import ui.theme.defaultInterval0ColorGreen
+import ui.theme.defaultInterval0ColorRed
+import ui.theme.defaultInterval10ColorBlue
+import ui.theme.defaultInterval10ColorGreen
+import ui.theme.defaultInterval10ColorRed
+import ui.theme.defaultInterval11ColorBlue
+import ui.theme.defaultInterval11ColorGreen
+import ui.theme.defaultInterval11ColorRed
+import ui.theme.defaultInterval1ColorBlue
+import ui.theme.defaultInterval1ColorGreen
+import ui.theme.defaultInterval1ColorRed
+import ui.theme.defaultInterval2ColorBlue
+import ui.theme.defaultInterval2ColorGreen
+import ui.theme.defaultInterval2ColorRed
+import ui.theme.defaultInterval3ColorBlue
+import ui.theme.defaultInterval3ColorGreen
+import ui.theme.defaultInterval3ColorRed
+import ui.theme.defaultInterval4ColorBlue
+import ui.theme.defaultInterval4ColorGreen
+import ui.theme.defaultInterval4ColorRed
+import ui.theme.defaultInterval5ColorBlue
+import ui.theme.defaultInterval5ColorGreen
+import ui.theme.defaultInterval5ColorRed
+import ui.theme.defaultInterval6ColorBlue
+import ui.theme.defaultInterval6ColorGreen
+import ui.theme.defaultInterval6ColorRed
+import ui.theme.defaultInterval7ColorBlue
+import ui.theme.defaultInterval7ColorGreen
+import ui.theme.defaultInterval7ColorRed
+import ui.theme.defaultInterval8ColorBlue
+import ui.theme.defaultInterval8ColorGreen
+import ui.theme.defaultInterval8ColorRed
+import ui.theme.defaultInterval9ColorBlue
+import ui.theme.defaultInterval9ColorGreen
+import ui.theme.defaultInterval9ColorRed
+import ui.theme.defaultIntervalColorAlpha
 
 @Composable
 fun ChordIdentification(
@@ -216,21 +255,9 @@ fun ChordIdentificationText(
             Column(
                 modifier = Modifier.heightIn(150.dp)
             ) {
-                val intervalColor0 = settings.getLong("intervalColor0", 0xffee1b24)
-                val intervalColor1 = settings.getLong("intervalColor1", 0xfff15b22)
-                val intervalColor2 = settings.getLong("intervalColor2", 0xfff68d1e)
-                val intervalColor3 = settings.getLong("intervalColor3", 0xfffdb913)
-                val intervalColor4 = settings.getLong("intervalColor4", 0xfffef100)
-                val intervalColor5 = settings.getLong("intervalColor5", 0xffc9db2a)
-                val intervalColor6 = settings.getLong("intervalColor6", 0xff3ab449)
-                val intervalColor7 = settings.getLong("intervalColor7", 0xff00a89d)
-                val intervalColor8 = settings.getLong("intervalColor8", 0xff0271bd)
-                val intervalColor9 = settings.getLong("intervalColor9", 0xff524ea1)
-                val intervalColor10 = settings.getLong("intervalColor10", 0xff672e91)
-                val intervalColor11 = settings.getLong("intervalColor11", 0xffb72367)
-
                 for (pitch in selectedPitchClassesSortedByInterval) {
-                    val intervalColor = when (
+
+                    val intervalColor = IntervalColor(
                         if ((pitch.midiValue % 12) - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12) >= 0)
                         {
                             (pitch.midiValue - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12)) % 12
@@ -238,21 +265,12 @@ fun ChordIdentificationText(
                         else {
                             (pitch.midiValue - (currentChord.sortedInterpretationList[selectedInterpretationIndex].root.midiValue % 12) + 12) % 12
                         }
-                    ) {
-                        0 -> Color(intervalColor0)
-                        1 -> Color(intervalColor1)
-                        2 -> Color(intervalColor2)
-                        3 -> Color(intervalColor3)
-                        4 -> Color(intervalColor4)
-                        5 -> Color(intervalColor5)
-                        6 -> Color(intervalColor6)
-                        7 -> Color(intervalColor7)
-                        8 -> Color(intervalColor8)
-                        9 -> Color(intervalColor9)
-                        10 -> Color(intervalColor10)
-                        11 -> Color(intervalColor11)
-                        else -> Color.Black
-                    }
+                    )
+
+                    val style = TextStyle(
+                        fontSize = 14.sp,
+                        color = intervalColor.textColor,
+                    )
 
                     Text(
                         text = when (
@@ -328,9 +346,9 @@ fun ChordIdentificationText(
                             0 -> "Root (1)"
                             else -> "error"
                         },
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = style,
                         modifier = Modifier
-                            .background(intervalColor)
+                            .background(intervalColor.backgroundColor)
                             .widthIn(150.dp)
                     )
                 }
