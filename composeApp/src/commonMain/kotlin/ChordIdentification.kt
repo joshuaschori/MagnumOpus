@@ -350,6 +350,7 @@ fun ChordIdentificationText(
                         modifier = Modifier
                             .background(intervalColor.backgroundColor)
                             .widthIn(150.dp)
+                            .padding(all = 5.dp)
                     )
                 }
             }
